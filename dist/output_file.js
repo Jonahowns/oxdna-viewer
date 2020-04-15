@@ -1,13 +1,31 @@
-function exportGLTF() {
+function exportGLTF(binary) {
+    if (binary == undefined) {
+        binary = false;
+    }
     var exporter = new THREE.GLTFExporter();
-    var options = { 'forceIndices': true };
+    var options = { 'forceIndices': true, 'binary': binary };
     // Parse the input and generate the glTF output
     exporter.parse(scene, function (result) {
-        var output = JSON.stringify(result, null, 2);
-        console.log(output);
-        makeTextFile('scene.gltf', output);
+            if ( result instanceof ArrayBuffer ) {
+                saveArrayBuffer( result, 'scene.glb' );
+            } else {
+                var output = JSON.stringify(result, null, 2);
+                console.log(output);
+                makeTextFile('scene.gltf', output);
+            }
     }, options);
 }
+
+function saveArrayBuffer(buffer, filename) {
+    var link = document.createElement( 'a' );
+    link.style.display = 'none';
+    document.body.appendChild( link ); // Firefox workaround, see #6594 threejs
+    let blob = new Blob([buffer], {type: 'application/octet-stream' });
+    link.href = URL.createObjectURL( blob );
+    link.download = filename;
+    link.click();
+}
+
 function makeOutputFiles() {
     let strand_len = makeTopFile();
     makeDatFile(strand_len);

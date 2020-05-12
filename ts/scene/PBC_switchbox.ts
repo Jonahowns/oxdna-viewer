@@ -88,7 +88,10 @@ function bringInBox(boxOption: string) {
     };
 
     // Apply to either monomers, or whole strands
-    if (boxOption == "Monomer") {
+    if (boxOption == "None") {
+        return
+    }
+    else if (boxOption == "Monomer") {
         elements.forEach(e=>{
             let pOld = e.getInstanceParameter3("cmOffsets");
             let pNew = coordInBox(pOld);

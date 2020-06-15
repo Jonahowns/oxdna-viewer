@@ -41,13 +41,9 @@ target.addEventListener("dragover", function (event) {
 }, false);
 target.addEventListener("dragenter", function (event) {
     event.preventDefault();
-    const e = document.getElementById("dragInstruction");
-    e.style.opacity = "0.1";
 }, false);
 target.addEventListener("dragexit", function (event) {
     event.preventDefault();
-    const e = document.getElementById("dragInstruction");
-    e.style.opacity = "0.8";
 }, false);
 // the actual code to drop in the config files
 //First, a bunch of global variables for trajectory reading
@@ -236,9 +232,6 @@ function readFilesFromURLParams() {
 }
 // Now that the files are identified, make sure the files are the correct ones and begin the reading process
 function readFiles(topFile, datFile, jsonFile) {
-    // Remove drag instructions
-    const dragInstruction = document.getElementById("dragInstruction");
-    dragInstruction.style.display = "none";
     if (topFile && datFile) {
         renderer.domElement.style.cursor = "wait";
         //make system to store the dropped files in

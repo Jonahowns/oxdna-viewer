@@ -142,7 +142,7 @@ function updateView(sys) {
             baseInfoStrands[strandID] = [base];
     });
     //Display every selected nucleotide id (top txt box)
-    makeTextArea(listBases.join(","), "BaseList");
+    makeTextArea(listBases.join(","), "baseList");
     //Brake down info (low txt box)
     let baseInfoLines = [];
     for (let strandID in baseInfoStrands) {

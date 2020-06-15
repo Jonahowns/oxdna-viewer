@@ -173,12 +173,12 @@ function divAndNeg(mat:number[],divisor:number){ //divide a matrix by divisor; n
 	return [-mat[0]/divisor, -mat[1]/divisor, -mat[2]/divisor];
 }
 
-
+/*
 //Temporary solution to adding configuration storage
 //This section sets interface values from the storage 
 if (window.sessionStorage.centerOption)
 (document.getElementById("centering") as HTMLSelectElement).value = window.sessionStorage.centerOption;
 if (window.sessionStorage.inboxingOption)    
 (document.getElementById("inboxing") as HTMLSelectElement).value = window.sessionStorage.inboxingOption ;
-
+*/
 

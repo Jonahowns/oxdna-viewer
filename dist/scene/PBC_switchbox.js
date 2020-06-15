@@ -6,8 +6,8 @@
  * @param elems A list of elements to centre
  */
 function centerAndPBCBtnClick(elems) {
-    window.sessionStorage.centerOption = document.getElementById("centering").value;
-    window.sessionStorage.inboxingOption = document.getElementById("inboxing").value;
+    window.sessionStorage.centerOption = getCenteringSetting();
+    window.sessionStorage.inboxingOption = getInboxingSetting();
     centerAndPBC(elems);
 }
 function centerAndPBC(elems) {
@@ -33,7 +33,7 @@ function getCenteringGoal() {
         centerOption = window.sessionStorage.centerOption;
     }
     else {
-        centerOption = document.getElementById("centering").value;
+        centerOption = getInboxingSetting();
     }
     //let centerOption = 
     switch (centerOption) {
@@ -50,12 +50,15 @@ function getInboxingMode() {
     if (window.sessionStorage.inboxingOption) {
         return window.sessionStorage.inboxingOption;
     }
-    return document.getElementById("inboxing").value;
+    return getInboxingSetting();
 }
 /**
  * Bring all elements (or strands) inside the simulation box
  */
 function bringInBox(boxOption) {
+    if (boxOption == "None") {
+        return;
+    }
     // We need actual modulus
     let realMod = (n, m) => ((n % m) + m) % m;
     // Find out which center we use, or just use box center

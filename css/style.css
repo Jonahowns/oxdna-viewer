@@ -29,10 +29,14 @@ canvas {
     font-size: 12px;
 }
 
-#selectionScope {
+.toggleGroup_w2 {
     width: 175px !important;
 }
 
+.toggleGroup_w1 {
+    width: 90px !important;
+}
+
 .tight {
-    padding: 0 !important;
+    padding-bottom: 0 !important;
 }

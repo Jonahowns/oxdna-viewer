@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+
+<head>
     <title>oxDNA three.js viewer</title>
     <!-- Required meta tags -->
     <meta charset="utf-8">
@@ -10,67 +11,110 @@
     <link rel="stylesheet" href="https://cdn.metroui.org.ua/v4.3.7/css/metro-all.min.css">
 
     <link rel="stylesheet" href="css/style.css">
-  </head>
+</head>
 
-  <body>
-    <aside 
-        class="sidebar pos-absolute z-2"
-        data-role="sidebar"
-        data-toggle="#sidebar-toggle"
-        data-shift=".shifted-content"
-    >
-        <div class="sidebar-header" data-image="images/sb-bg-1.jpg">
-            <div class="avatar">
-                <img data-role="gravatar" data-email="sergey@pimenov.com.ua">
-            </div>
-            <span class="title fg-white">Metro 4 Components Library</span>
-            <span class="subtitle fg-white"> 2018 © Sergey Pimenov</span>
+<body>
+    <aside class="sidebar pos-absolute z-2" data-role="sidebar" data-toggle="#sidebar-toggle"
+        data-shift=".shifted-content">
+        <div class="sidebar-header bg-grayMouse">
+            <span class="title fg-white">oxView</span>
+            <span class="subtitle fg-white"> An oxdna viewer</span>
         </div>
         <ul class="sidebar-menu">
-            <li><a><span class="mif-home icon"></span>Home</a></li>
-            <li><a><span class="mif-books icon"></span>Guide</a></li>
-            <li><a><span class="mif-files-empty icon"></span>Examples</a></li>
+            <li><a href="https://github.com/sulcgroup/oxdna-viewer/"><span class="mif-github icon"></span>Github</a>
+            </li>
+            <li><a href="https://github.com/sulcgroup/oxdna-viewer/blob/master/README.md"><span
+                        class="mif-books icon"></span>Documentation</a></li>
+            <li><a href="https://github.com/sulcgroup/oxdna-viewer/tree/master/examples"><span
+                        class="mif-files-empty icon"></span>Examples</a></li>
+            <li><a href="https://www.youtube.com/channel/UC4ClrQ8xMypSbDZG2QCehpA"><span
+                        class="mif-youtube-play icon"></span>Video tutorials</a></li>
             <li class="divider"></li>
-            <li><a><span class="mif-images icon"></span>Icons</a></li>
+            <li><a href="https://doi.org/10.1093/nar/gkaa417"><span class="mif-file-text icon"></span>Please cite our
+                    paper</a></li>
         </ul>
     </aside>
-      
+
+    <!--
+    <div class="p-2" data-role="window" data-draggable="true" data-place="center" data-btn-max="false" data-shadow="true"
+        data-width="200" data-height="160" data-title="3D Export">
+    </div>
+    -->
+
+    <div id='export3D' class="dialog" data-role="dialog">
+        <div class="dialog-title">3D Export Options</div>
+        <div class="dialog-content">
+            <label for="3dExportFormat">Export format:</label>
+            <select id="3dExportFormat">
+                <option value="gltf">gltf</option>
+                <option value="glb">glb</option>
+                <option value="stl">stl</option>
+            </select>
+            <input type="checkbox" id="includeBackbone" title="include backbone mesh into output" checked>Backbone
+            mesh<br>
+            <input type="checkbox" id="includeNucleoside" title="include nucleoside mesh into output" checked>Nucleoside
+            mesh<br>
+            <input type="checkbox" id="includeConnector" title="include connector mesh into output" checked>Connector
+            mesh<br>
+            <input type="checkbox" id="includeBBconnector" title="include backbone connector mesh into output"
+                checked>Backbone connector mesh<br>
+            <label for="3dExportScale">scale: </label>
+            <input type="number" value="1" id="3dExportScale" title="rescale the model" min=1 max=10></br>
+            <label for="3dExportFacesMul">faces multiplier: </label>
+            <input type="number" value="2" id="3dExportFacesMul" title="increases model smoothness" min=1 max=5><br>
+            <input type="checkbox" id="3dExportFlat"
+                title="Ignore system hierarchy and export all object on the same level (makes faster import)">Export
+            flat hierarchy<br>
+            <label for="3dExportFilename">File name: </label>
+            <input type="text" id="3dExportFilename" size="13" value="output" title="3d file name">
+        </div>
+        <div class="dialog-actions">
+            <button class="button js-dialog-close">Cancel</button>
+            <button onclick="make3dOutput()" class="button primary js-dialog-close">Export</button>
+        </div>
+    </div>
+
     <nav id="menu" data-role="ribbonmenu" class="shifted-content">
         <ul class="tabs-holder">
-            <li id='sidebar-toggle' class="static"><a href="#section-file">oxView</a></li>
+            <li id='sidebar-toggle' class="static"><a href="#">oxView</a></li>
             <li><a href="#section-file">File</a></li>
             <li><a href="#section-select">Select</a></li>
             <li><a href="#section-edit">Edit</a></li>
             <li><a href="#section-view">View</a></li>
+            <li><a href="#section-trajectory">Trajectory</a></li>
             <li><a href="#section-oxserve">Ox-Serve</a></li>
         </ul>
 
         <div class="content-holder">
             <div class="section" id="section-file">
-                <button class="ribbon-button">
+                <button class="ribbon-button primary">
                     <span class="mif-folder-open mif-3x"></span>
                     <span class="caption">Open</span>
                 </button>
-                <button class="ribbon-button">
+                <button class="ribbon-button" onclick="makeOxViewJsonFile()"
+                    title="Download a file JSON file storing the current design">
                     <span class="mif-floppy-disk mif-3x"></span>
                     <span class="caption">Save .oxview</span>
                 </button>
                 <div class="group">
                     <button class="ribbon-button">
-                        <span class="mif-floppy-disk mif-3x"></span>
+                        <span class="mif-floppy-disk mif-2x"></span>
                         <span class="caption">Simulation files</span>
                     </button>
-                    <button class="ribbon-button">
-                        <span class="mif-file-download mif-3x"></span>
+                    <button onclick="makePairTrapFile()" class="ribbon-button"
+                        title="Download a mutual trap file for all basepairs">
+                        <span class="mif-file-download mif-2x"></span>
                         <span class="caption">Mutual trap</span>
                     </button>
                     <span class="title">oxDNA files</span>
                 </div>
-                <button class="ribbon-button">
+                <button class="ribbon-button" onclick="Metro.dialog.open('#export3D')"
+                    title="Options for 3d export of the scene.">
                     <span class="mif-file-download mif-3x"></span>
                     <span class="caption">3D Export</span>
                 </button>
-                <button class="ribbon-button">
+                <button onclick="makeSequenceFile()" class="ribbon-button"
+                    title="Download a file containing all sequences">
                     <span class="mif-file-download mif-3x"></span>
                     <span class="caption">Sequence file</span>
                 </button>
@@ -81,13 +125,14 @@
             </div>
             <div class="section" id="section-select">
                 <div class="group">
-                    <input type="checkbox" id="selectToggle" data-role="switch" checked>
-                    <span class="title">Select</span>
-                </div>
-
-                <div class="group">
-                    <div class="ribbon-toggle-group" id="selectionScope">
+                    <div class="ribbon-toggle-group toggleGroup_w2" id="selectionScope">
                         <button class="ribbon-icon-button">
+                            <span class="icon">
+                                <span class="mif-not"></span>
+                            </span>
+                            <span class="caption">Disabled</span>
+                        </button>
+                        <button class="ribbon-icon-button active">
                             <span class="icon">
                                 <span class="mif-location"></span>
                             </span>
@@ -121,13 +166,6 @@
                             </span>
                             <span class="caption">Box</span>
                         </button>
-
-                        <button class="ribbon-icon-button">
-                            <span class="icon">
-                                <span class="mif-enlarge"></span>
-                            </span>
-                            <span class="caption">All</span>
-                        </button>
                     </div>
                     <span class="title">Selection mode</span>
                 </div>
@@ -145,24 +183,20 @@
                     <span class="mif-list mif-3x"></span>
                     <span class="caption">Selected base info</span>
                 </button>
-                <button 
-                    class="ribbon-button"
-                    onclick="makeSelectedBasesFile()"
-                    title="Download plain-text file of selected bases"
-                >
+                <button class="ribbon-button" onclick="makeSelectedBasesFile()"
+                    title="Download plain-text file of selected bases">
                     <span class="mif-file-download mif-3x"></span>
                     <span class="caption">Selected base list</span>
                 </button>
-                <button
-                    class="ribbon-button" 
-                    onclick="makeMutualTrapFile()" 
-                    title="Create mutual trap file pairing every two bases in the selected base list"
-                >
+                <button class="ribbon-button" onclick="makeMutualTrapFile()"
+                    title="Create mutual trap file pairing every two bases in the selected base list">
                     <span class="mif-shrink2 mif-2x"></span>
                     <span class="mif-file-download mif-2x"></span>
                     <span class="caption">Selected base<br>trap file</span>
                 </button>
             </div>
+
+            <!--Edit-->
             <div class="section" id="section-edit">
                 <div class="tight group">
                     <button class="ribbon-button">
@@ -188,13 +222,267 @@
                         <span class="caption">Paste</span>
                     </button>
                 </div>
+
+                <div class="tight group">
+                    <div class="ribbon-toggle-group toggleGroup_w1" id="transformType">
+                        <button class="ribbon-icon-button active">
+                            <span class="icon">
+                                <span class="mif-not"></span>
+                            </span>
+                            <span class="caption">None</span>
+                        </button>
+
+                        <button class="ribbon-icon-button">
+                            <span class="icon">
+                                <span class="mif-enlarge"></span>
+                            </span>
+                            <span class="caption">Translate</span>
+                        </button>
+
+                        <button class="ribbon-icon-button">
+                            <span class="icon">
+                                <span class="mif-3d-rotation"></span>
+                            </span>
+                            <span class="caption">Rotate</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="tight group">
+                    <button class="ribbon-button">
+                        <span class="mif-cut mif-2x"></span>
+                        <span class="caption">Nick</span>
+                    </button>
+                    <button class="ribbon-button">
+                        <span class="mif-copy mif-2x"></span>
+                        <span class="caption">Delete</span>
+                    </button>
+                    <button class="ribbon-button">
+                        <span class="mif-paste mif-2x"></span>
+                        <span class="caption">Ligate</span>
+                    </button>
+                </div>
+
+                <div class="tight group flex-column" style="width: 470px">
+                    <div>
+                        <input type="checkbox" id="setCompl" data-role="checkbox" data-caption="Duplex mode">
+                        <button class="ribbon-icon-button">
+                            <span class="mif-pencil mif-1x"></span>
+                            <span class="caption">Set</span>
+                        </button>
+                        <button class="ribbon-icon-button">
+                            <span class="mif-plus mif-1x"></span>
+                            <span class="caption">Extend</span>
+                        </button>
+                        <button class="ribbon-icon-button">
+                            <span class="mif-cut mif-1x"></span>
+                            <span class="caption">Create</span>
+                        </button>
+                        <button class="ribbon-icon-button">
+                            <span class="mif-cut mif-1x"></span>
+                            <span class="caption">Insert</span>
+                        </button>
+                        <button class="ribbon-icon-button">
+                            <span class="mif-cut mif-1x"></span>
+                            <span class="caption">Skip</span>
+                        </button>
+                    </div>
+                    <input type="text" data-role="input" id="sequence" class="mb-1"
+                        data-append="<span id='seqLen'>0</span>" data-prepend="<span'>Seq</span>"
+                        style="text-transform: uppercase;"
+                        oninput='document.getElementById("seqLen").innerHTML = this.value.length'>
+                </div>
+                <div class="tight group">
+                    <div class="ribbon-split-button">
+                        <button class="ribbon-main" id="clusterSim" onchange="toggleClusterSim()">
+                            <span class="icon">
+                                <span class="mif-play"></span>
+                            </span>
+                        </button>
+                        <span class="ribbon-split dropdown-toggle">Cluster dynamics</span>
+                        <ul class="ribbon-dropdown" data-role="dropdown" data-duration="100">
+                            <p>Cluster repulsion constant</p>
+                            <input type="text" data-role="spinner" class="input-small" data-step="10">
+                        </ul>
+                    </div>
+                </div>
+
+
             </div>
             <div class="section" id="section-view">
-                <p class="p-4">Section three</p>
+                <div class="tight group">
+                    <div class="group">
+                        <div id="inboxing" class="ribbon-toggle-group toggleGroup_w1">
+                            <button class="ribbon-icon-button active">
+                                <span class="icon">
+                                    <span class="mif-not"></span>
+                                </span>
+                                <span class="caption">None</span>
+                            </button>
+
+                            <button class="ribbon-icon-button">
+                                <span class="icon">
+                                    <span class="mif-location"></span>
+                                </span>
+                                <span class="caption">Monomer</span>
+                            </button>
+
+                            <button class="ribbon-icon-button">
+                                <span class="icon">
+                                    <span class="mif-flow-line"></span>
+                                </span>
+                                <span class="caption">Strand</span>
+                            </button>
+                        </div>
+                        <span class="title">PBC</span>
+                    </div>
+                    <div class="group">
+                        <div id="centering" class="ribbon-toggle-group toggleGroup_w1">
+                            <button class="ribbon-icon-button active">
+                                <span class="icon">
+                                    <span class="mif-not"></span>
+                                </span>
+                                <span class="caption">None</span>
+                            </button>
+
+                            <button class="ribbon-icon-button">
+                                <span class="icon">
+                                    <span class="mif-crop"></span>
+                                </span>
+                                <span class="caption">Box</span>
+                            </button>
+
+                            <button class="ribbon-icon-button">
+                                <span class="icon">
+                                    <span>+</span>
+                                </span>
+                                <span class="caption">Origin</span>
+                            </button>
+                        </div>
+                        <span class="title">Centering</span>
+                    </div>
+                    <button class="ribbon-button">
+                        <span class="mif-done mif-3x"></span>
+                        <span class="caption">Apply</span>
+                    </button>
+                </div>
+                <div class="tight group flex-column">
+                    <div style="height: 27px;"><input type="checkbox" id="arrowToggle" onchange="toggleArrows(this)"
+                            data-role="switch" data-caption="Display Arrows" checked>
+                    </div>
+                    <div style="height: 27px;"><input type="checkbox" id="boxToggle" onchange="toggleBox(this)"
+                            data-role="switch" data-caption="Display Box">
+                    </div>
+                    <div style="height: 27px;"><input type="checkbox" id="boxToggle" onchange="toggleFog()"
+                            data-role="switch" data-caption="Display Fog">
+                        <span class="ribbon-split dropdown-toggle"></span>
+                        <ul class="ribbon-dropdown" data-role="dropdown" data-duration="100">
+                            <label for="fogNear">Near: </label>
+                            <input type="text" data-role="spinner" class="input-small" value="1" id="fogNear"
+                                title="Minimum distance to apply fog" min=0
+                                onchange="if(scene.fog!=null){setFog();}"><br>
+                            <label for="fogNear">Far: </label>
+                            <input type="text" data-role="spinner" class="input-small" value="200" id="fogFar"
+                                title="Maximum distance to apply fog" min=0
+                                onchange="if(scene.fog!=null){setFog();}"><br>
+                        </ul>
+                    </div>
+                </div>
+                <div class="group">
+                    <div class="ribbon-toggle-group toggleGroup_w2">
+                        <button class="ribbon-icon-button active">
+                            <span class="icon">
+                                <span class="mif-flow-line"></span>
+                            </span>
+                            <span class="caption">Strand</span>
+                        </button>
+
+                        <button class="ribbon-icon-button">
+                            <span class="icon">
+                                <span class="mif-cloudy4"></span>
+                            </span>
+                            <span class="caption">Cluster</span>
+                        </button>
+
+                        <button class="ribbon-icon-button">
+                            <span class="icon">
+                                <span class="mif-flow-tree"></span>
+                            </span>
+                            <span class="caption">System</span>
+                        </button>
+
+                        <button class="ribbon-icon-button">
+                            <span class="icon">
+                                <span class="mif-chart-dots"></span>
+                            </span>
+                            <span class="caption">Overlay</span>
+                        </button>
+                    </div>
+                    <button class="ribbon-button">
+                        <span class="mif-palette mif-2x"></span>
+                        <span class="caption">Edit colors</span>
+                    </button>
+                    <button class="ribbon-button">
+                        <span class="mif-pencil mif-2x"></span>
+                        <span class="caption">Custom coloring</span>
+                    </button>
+                    <span class="title">Colors</span>
+                </div>
+                <div class="group">
+                    <button class="ribbon-button">
+                        <span class="mif-eye mif-3x"></span>
+                        <span class="caption">Toggle selection</span>
+                    </button>
+                    <button class="ribbon-button">
+                        <span class="mif-undo mif-3x"></span>
+                        <span class="caption">Reset</span>
+                    </button>
+                    <span class="title">Visibility</span>
+                </div>
+                <div class="tight group">
+                    <button class="ribbon-button" onclick="api.switchCamera()">
+                        <span class="mif-video-camera mif-3x"></span>
+                        <span id="cameraSwitch" class="caption">Orthographic</span>
+                    </button>
+                    <button class="ribbon-button">
+                        <span class="mif-flow-cascade mif-3x"></span>
+                        <span class="caption">System hierarchy</span>
+                    </button>
+                </div>
             </div>
+
+            <!--Trajectory-->
+            <div class="section" id="section-trajectory">
+                <div class="tight group">
+                    <div>
+                        <button class="ribbon-icon-button" onclick="trajReader.previousConfig()"
+                            title="Previous config (left keyboard arrow)">
+                            <span class="mif-previous mif-2x"></span>
+                            <span class="caption">Previous</span>
+                        </button>
+                        <p id="trajTimestep" hidden="true"></p>
+                        <button class="ribbon-icon-button" onclick="trajReader.nextConfig()"
+                            title="Next config (right keyboard arrow)">
+                            <span class="mif-next mif-2x"></span>
+                            <span class="caption">Next</span>
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+
             <div class="section" id="section-oxserve">
-                <p class="p-4">Section three</p>
+                <button class="ribbon-button" id="btnConnect" onclick="openConnections()" title="Live interactions.">
+                    <span class="mif-cast mif-3x"></span>
+                    <span id="cameraSwitch" class="caption">Connect</span>
+                </button>
+                <button class="ribbon-button" id="btnControlSim" onclick="toggleOptions('relaxConfigWindow')">
+                    <span class="mif-cogs mif-3x"></span>
+                    <span id="cameraSwitch" class="caption">Settings</span>
+                </button>
             </div>
+
+
         </div>
     </nav>
 
@@ -202,7 +490,7 @@
     <div id="container">
         <div><canvas id="colorbarCanvas"></canvas></div>
     </div>
-    <canvas id="threeCanvas" tabindex="1" style="width: 100%; height: 100%;"></canvas>
+    <canvas id="threeCanvas" class="shifted-content" tabindex="1" style="width: 100%; height: 100%;"></canvas>
 
     <!-- Metro 4 -->
     <script src="https://cdn.metroui.org.ua/v4/js/metro.min.js"></script>
@@ -232,7 +520,7 @@
         <script src="./dist/model/RNA.js"></script>
         <script src="./dist/model/strand.js"></script>
         <script src="./dist/model/system.js"></script>
-        <script src="./dist/model/anm.js"></script>        
+        <script src="./dist/model/anm.js"></script>
         <script src="./dist/UI/base_selector.js"></script>
         <script src="./dist/UI/keybindings.js"></script>
         <script src="./dist/UI/UI.js"></script>
@@ -249,5 +537,6 @@
         <script src="./dist/ox_serve/relax_scenarios.js"></script>
         <script src="./dist/ox_serve/live_relax.js"></script>
     </div>
-  </body>
+</body>
+
 </html>

@@ -373,3 +373,27 @@ function longCalculation(calc: () => void, message: string, callback?: () => voi
         }
     }));
 }
+
+function getToggleGroupValue(id: string): string {
+    let value = undefined;
+    Array.from(document.getElementById(id).children).forEach(i=>{
+        let classes = Array.from(i.classList);
+        if (classes.includes("active")) {
+            Array.from(i.children).forEach(j=>{
+                classes = Array.from(j.classList);
+                if (classes.includes("caption")) {
+                    value = j.innerHTML;
+                }
+            });
+        }
+    });
+    return value;
+}
+
+function getCenteringSetting() {
+    return getToggleGroupValue('centering');
+}
+
+function getInboxingSetting() {
+    return getToggleGroupValue('inboxing');
+}

@@ -155,7 +155,7 @@ function updateView(sys: System) {
 	);
 
 	//Display every selected nucleotide id (top txt box)
-	makeTextArea(listBases.join(","), "BaseList");
+	makeTextArea(listBases.join(","), "baseList");
 
 	//Brake down info (low txt box)
 	let baseInfoLines = [];

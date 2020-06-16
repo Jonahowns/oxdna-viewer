@@ -15,10 +15,10 @@ function calculateClusters() {
     const minPts = parseFloat((<HTMLInputElement>document.getElementById("minPts")).value);
     const epsilon = parseFloat((<HTMLInputElement>document.getElementById("epsilon")).value);
 
-    longCalculation(
+    view.longCalculation(
         ()=>{dbscan(minPts, epsilon)}, // Run this
         "Calculating clusters, please be patient...", // Tell the user
-        ()=>{setColoringMode("Cluster")} // Then color by cluster
+        ()=>{view.setColoringMode("Cluster")} // Then color by cluster
     );
 }
 

@@ -186,6 +186,10 @@ THREE.TransformControls = function ( camera, domElement ) {
 
 	};
 
+	this.isHovered = function () {
+		return this.axis != null;
+	}
+
 	// Defined getter, setter and store for a property
 	function defineProperty( propName, defaultValue ) {
 
@@ -266,6 +270,8 @@ THREE.TransformControls = function ( camera, domElement ) {
 	this.pointerDown = function ( pointer ) {
 
 		if ( !this.visible || this.dragging === true || ( pointer.button !== undefined && pointer.button !== 0 ) ) return;
+
+		console.log('Pointer down')
 
 		// Calculate current rotation from quaternion
 		rotation = new THREE.Euler().setFromQuaternion(currentQuaternion, 'XYZ').toVector3();

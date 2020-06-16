@@ -57,7 +57,11 @@ var toggleFailure = false, defaultColormap = "cooltowarm";
 target.addEventListener("drop", function (event) {
     // cancel default actions
     event.preventDefault();
-    const files = event.dataTransfer.files, filesLen = files.length;
+    const files = event.dataTransfer.files;
+    handleFiles(files);
+}, false);
+function handleFiles(files) {
+    const filesLen = files.length;
     let topFile, jsonFile, trapFile;
     // assign files to the extentions
     for (let i = 0; i < filesLen; i++) {
@@ -116,7 +120,7 @@ target.addEventListener("drop", function (event) {
         renderer.domElement.style.cursor = "auto";
     }
     render();
-}, false);
+}
 let trap_objs = [];
 let trap_file = "";
 //parse a trap file
@@ -313,7 +317,7 @@ function readJson(system, jsonReader) {
                 system.setColorFile(data);
                 makeLut(data, key);
                 try { //you need to toggle here for small systems, during the scene add for large systems because asynchronous reading.
-                    setColoringMode("Overlay");
+                    view.setColoringMode("Overlay");
                 }
                 catch {
                     toggleFailure = true;
@@ -567,7 +571,7 @@ function addSystemToScene(system) {
     pickingScene.add(system.dummyBackbone);
     // Catch an error caused by asynchronous readers and different file sizes
     if (toggleFailure) {
-        setColoringMode("Overlay");
+        view.setColoringMode("Overlay");
     }
     render();
     // Reset the cursor from the loading spinny and reset canvas focus

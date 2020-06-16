@@ -23,65 +23,12 @@ function showTransformControl(mode) {
         transformControls.hide();
     }
 }
-// Select and/or transform
-function getActionModes() {
-    let modes = document.getElementsByName("action");
-    let checked = [];
-    for (let i = 0; i < modes.length; i++) {
-        if (modes[i].checked) {
-            checked.push(modes[i].value);
-        }
-    }
-    return checked;
-}
-// nucleotides/strand/system
-function getScopeMode() {
-    return document.querySelector('input[name="scope"]:checked')['value'];
-}
-// X/Y/Z
-function getAxisMode() {
-    return document.querySelector('input[name="rotate"]:checked')['value'];
-}
-function getAngle() {
-    return document.getElementById("rotAngle").valueAsNumber * Math.PI / 180;
-}
-function selectPairs() {
-    return document.getElementById("selectPairs").checked;
-}
 //THREE quaternions are in (x, y, z, w) order
 //GLSL quaternions are in (w, z, y, x) order
 //So when you need to convert between them...
 function glsl2three(input) {
     let out = new THREE.Quaternion(input.w, input.z, input.y, input.x);
     return out;
-}
-function rotateByInput() {
-    if (selectedBases.size < 1) { //if no object has been selected, rotation will not occur and error message displayed
-        notify("Please select elements to rotate.");
-    }
-    let angle = getAngle();
-    let axisString = getAxisMode();
-    // Rotate around user selected axis with user entered angle
-    let axis = new THREE.Vector3();
-    switch (axisString) {
-        case "X":
-            axis.set(1, 0, 0);
-            break;
-        case "Y":
-            axis.set(0, 1, 0);
-            break;
-        case "Z":
-            axis.set(0, 0, 1);
-            break;
-        default: notify("Unknown rotation axis: " + axisString);
-    }
-    // This will be rotating around the center of mass of the selected bases.
-    let c = new THREE.Vector3(0, 0, 0);
-    selectedBases.forEach((base) => {
-        c.add(base.getInstanceParameter3("cmOffsets"));
-    });
-    c.multiplyScalar(1 / selectedBases.size);
-    editHistory.do(new RevertableRotation(selectedBases, axis, angle, c));
 }
 function rotateElements(elements, axis, angle, about) {
     let q = new THREE.Quaternion();

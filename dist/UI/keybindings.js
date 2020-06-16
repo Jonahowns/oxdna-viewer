@@ -112,7 +112,7 @@ canvas.addEventListener("keydown", event => {
             }
             break;
         case 'f1':
-            toggleModal("keyboardShortcuts");
+            view.toggleModal("keyboardShortcuts");
             break;
     }
     // Key is value of the key, e.g. '1', while code is the id of

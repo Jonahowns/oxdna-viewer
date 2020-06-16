@@ -158,7 +158,7 @@ module api{
         systems.forEach(sys => {
             updateView(sys);
         });
-        if (selectedBases.size > 0 && getActionModes().includes("Transform")) {
+        if (selectedBases.size > 0 && view.transformEnabled()) {
             transformControls.show();
         }
     }

@@ -1,3 +1,6 @@
+// Use Metro GUI
+declare var Metro: any;
+
 /**
  * Create a level in the System Hierarchy; Either system, strand or monomer.
  * @param parent Parent HTML container
@@ -117,29 +120,6 @@ function drawSystemHierarchy() {
     }
 }
 
-function toggleSideNav(button: HTMLInputElement) {
-    let hidden = "show toolbar";
-    let visible = "hide toolbar";
-    let content = document.getElementById("sidenavContent");
-    if (button.innerText.toLowerCase() == hidden) {
-        //tabcontent[0].style.display = "block";
-        content.hidden = false;
-        button.innerHTML = visible;
-    } else {
-        content.hidden = true;
-        button.innerHTML = hidden;
-    }
-}
-
-function toggleFieldSet(elem: HTMLLegendElement) {
-    let elems = elem.parentElement.children;
-    for (let i=0; i<elems.length; i++) {
-        if (elems[i] !== elem) {
-            elems[i]['hidden'] = !elems[i]['hidden'];
-        }
-    }
-}
-
 function handleMenuAction(event: String) {
     switch (event) {
         case "undo": editHistory.undo(); break;
@@ -152,16 +132,6 @@ function handleMenuAction(event: String) {
         case "invert": invertSelection(); break;
         case "clear": clearSelection(); break;
     }
-}
-
-function toggleModal(id) {
-    let modal = document.getElementById(id);
-    modal.classList.toggle("show-modal");
-}
-
-function toggleOptions(id) {
-    let opt = document.getElementById(id);
-    opt.hidden = !opt.hidden;
 }
 
 function colorOptions() {
@@ -254,7 +224,7 @@ function colorSelection() {
                     console.log(emptyTmpSystems)
                     initLutCols(emptyTmpSystems)
                 }
-                setColoringMode("Overlay");
+                view.setColoringMode("Overlay");
             }
 
             initLutCols(systems);
@@ -270,7 +240,7 @@ function colorSelection() {
                 e.getSystem().lutCols[sid] = selectedColor;
             });
             
-            setColoringMode("Overlay");
+            view.setColoringMode("Overlay");
             if (!systems.some(system => system.colormapFile)) {
                 api.removeColorbar();
             }
@@ -278,7 +248,7 @@ function colorSelection() {
         }
 
         resetButton.onclick = () => {
-            setColoringMode("Strand");
+            view.setColoringMode("Strand");
             initLutCols(systems);
             initLutCols(tmpSystems);
             clearSelection();
@@ -343,17 +313,96 @@ function notify(message: string) {
     console.info(`Notification: ${message}`);
 }
 
-let basepairMessage = "Locating basepairs, please be patient...";
-function longCalculation(calc: () => void, message: string, callback?: () => void) {
-    // Create an information modal
-    const modal = document.getElementById('pause');
-    const notification = document.createElement('div');
-    notification.className = "modal-content";
-    notification.innerHTML = message;
-    modal.appendChild(notification);
-    modal.classList.add("show-modal");
+class View {
+    private doc: Document;
+    basepairMessage = "Locating basepairs, please be patient...";
 
-    // Set wait cursor and request an animation frame to make sure
+    constructor(doc: Document) {
+        this.doc = doc;
+    }
+
+    private setToggleGroupValue(id: string, value: string) {
+        let toggleGroup = this.doc.getElementById(id);
+        let active = toggleGroup.querySelector('.active');
+        if(active) {
+            active.classList.remove('active');
+        }
+        for (let opt of toggleGroup.children) {
+            if (opt.querySelector('.caption').innerHTML == value) {
+                opt.classList.add('active');
+                return;
+            }
+        }
+
+    }
+
+    private getToggleGroupValue(id: string): string {
+        return this.doc.getElementById(id).querySelector('.active').querySelector('.caption').innerHTML;
+    }
+
+    public getInputNumber(id: string): number {
+        return (<HTMLInputElement>this.doc.getElementById(id)).valueAsNumber;
+    }
+
+    public getInputValue(id: string): string {
+        return (<HTMLInputElement>this.doc.getElementById(id)).value;
+    }
+
+    public getInputBool(id: string): boolean {
+        return (<HTMLInputElement>document.getElementById(id)).checked;
+    }
+
+    public toggleModal(id: string) {
+         ;
+     }
+
+    // nucleotides/strand/system
+    public getSelectionMode(): string {
+        return this.getToggleGroupValue('selectionScope');
+    }
+
+    public selectionEnabled() {
+        return this.getSelectionMode() != "Disabled";
+    }
+
+    public selectPairs(): boolean {
+        return (<HTMLInputElement>this.doc.getElementById("selectPairs")).checked;
+    }
+
+    public getCenteringSetting() {
+        return this.getToggleGroupValue('centering');
+    }
+
+    public getInboxingSetting() {
+        return this.getToggleGroupValue('inboxing');
+    }
+
+    public getTransformSetting() {
+        return this.getToggleGroupValue('transform');
+    }
+
+    public transformEnabled() {
+        return this.getTransformSetting() != "None";
+    }
+
+    public getColoringMode(): string {
+        return this.getToggleGroupValue('coloringMode');
+    }
+
+    public setColoringMode(mode: string) {
+        this.setToggleGroupValue('coloringMode', mode);
+        coloringChanged();
+    };
+
+    public longCalculation(calc: () => void, message: string, callback?: () => void) {
+        let activity = Metro.activity.open({
+            type: 'square',
+            overlayColor: '#fff',
+            overlayAlpha: 1,
+            text: message
+        });
+
+        // Set wait cursor and request an animation frame to make sure
     // that it gets changed before starting calculation:
     let dom = document.activeElement;
     dom['style'].cursor = "wait";
@@ -366,34 +415,13 @@ function longCalculation(calc: () => void, message: string, callback?: () => voi
 
         // Change cursor back and remove modal
         dom['style'].cursor = "auto";
-        modal.removeChild(notification);
-        modal.classList.remove("show-modal");
+        Metro.activity.close(activity);
         if(callback) {
             callback();
         }
     }));
+    }
+
 }
 
-function getToggleGroupValue(id: string): string {
-    let value = undefined;
-    Array.from(document.getElementById(id).children).forEach(i=>{
-        let classes = Array.from(i.classList);
-        if (classes.includes("active")) {
-            Array.from(i.children).forEach(j=>{
-                classes = Array.from(j.classList);
-                if (classes.includes("caption")) {
-                    value = j.innerHTML;
-                }
-            });
-        }
-    });
-    return value;
-}
-
-function getCenteringSetting() {
-    return getToggleGroupValue('centering');
-}
-
-function getInboxingSetting() {
-    return getToggleGroupValue('inboxing');
-}
+let view = new View(document);

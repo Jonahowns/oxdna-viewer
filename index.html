@@ -41,7 +41,27 @@
     </div>
     -->
 
-    <div id='export3D' class="dialog" data-role="dialog">
+    <div id='openFileDialog' class="dialog" data-role="dialog">
+        <input id='fileInput' type="file" multiple="multiple" data-role="file" data-mode="drop">    
+        <div class="dialog-actions">
+            <button class="button js-dialog-close">Cancel</button>
+            <button onclick="handleFiles(document.getElementById('fileInput').files)" class="button primary js-dialog-close">Open</button>
+        </div>
+    </div>
+
+    <div id='exportOxdnaDialog' class="dialog" data-role="dialog">
+        <p>Save the current stucture to oxDNA configuration and/or topology files</p>
+        <p id="gidUpdateWarning" hidden=true>Please note that new nucleotide IDs will be generated in the exported files since the topology has been edited.</p>
+        <input type="checkbox" id="topDownload" data-caption="Topology" title="identies and connections of particles" checked data-role="checkbox">
+        <input type="checkbox" id="datDownload" data-caption="Configuration" title="the xyz positions and rotations of particles" checked data-role="checkbox">
+        <input type="text" data-role="input" data-prepend="Name" id="outputFilename" value="output" title="The prefix to name the .dat and .top files">
+        <div class="dialog-actions">
+            <button class="button js-dialog-close">Cancel</button>
+            <button onclick="makeOutputFiles()" class="button primary js-dialog-close">Export</button>
+        </div>
+    </div>
+
+    <div id='export3DDialog' class="dialog" data-role="dialog">
         <div class="dialog-title">3D Export Options</div>
         <div class="dialog-content">
             <label for="3dExportFormat">Export format:</label>
@@ -50,21 +70,16 @@
                 <option value="glb">glb</option>
                 <option value="stl">stl</option>
             </select>
-            <input type="checkbox" id="includeBackbone" title="include backbone mesh into output" checked>Backbone
-            mesh<br>
-            <input type="checkbox" id="includeNucleoside" title="include nucleoside mesh into output" checked>Nucleoside
-            mesh<br>
-            <input type="checkbox" id="includeConnector" title="include connector mesh into output" checked>Connector
-            mesh<br>
-            <input type="checkbox" id="includeBBconnector" title="include backbone connector mesh into output"
-                checked>Backbone connector mesh<br>
+            <input type="checkbox" id="includeBackbone" title="include backbone mesh into output" checked>Backbone mesh<br>
+            <input type="checkbox" id="includeNucleoside" title="include nucleoside mesh into output" checked>Nucleoside mesh<br>
+            <input type="checkbox" id="includeConnector" title="include connector mesh into output" checked>Connector mesh<br>
+            <input type="checkbox" id="includeBBconnector" title="include backbone connector mesh into output" checked>Backbone connector mesh<br>
             <label for="3dExportScale">scale: </label>
             <input type="number" value="1" id="3dExportScale" title="rescale the model" min=1 max=10></br>
             <label for="3dExportFacesMul">faces multiplier: </label>
             <input type="number" value="2" id="3dExportFacesMul" title="increases model smoothness" min=1 max=5><br>
             <input type="checkbox" id="3dExportFlat"
-                title="Ignore system hierarchy and export all object on the same level (makes faster import)">Export
-            flat hierarchy<br>
+                title="Ignore system hierarchy and export all object on the same level (makes faster import)">Export flat hierarchy<br>
             <label for="3dExportFilename">File name: </label>
             <input type="text" id="3dExportFilename" size="13" value="output" title="3d file name">
         </div>
@@ -82,12 +97,12 @@
             <li><a href="#section-edit">Edit</a></li>
             <li><a href="#section-view">View</a></li>
             <li><a href="#section-trajectory">Trajectory</a></li>
-            <li><a href="#section-oxserve">Ox-Serve</a></li>
+            <li><a href="#section-dynamics">Dynamics</a></li>
         </ul>
 
         <div class="content-holder">
             <div class="section" id="section-file">
-                <button class="ribbon-button primary">
+                <button class="ribbon-button primary" onclick="Metro.dialog.open('#openFileDialog')">
                     <span class="mif-folder-open mif-3x"></span>
                     <span class="caption">Open</span>
                 </button>
@@ -97,7 +112,9 @@
                     <span class="caption">Save .oxview</span>
                 </button>
                 <div class="group">
-                    <button class="ribbon-button">
+                    <button class="ribbon-button"
+                        onclick="Metro.dialog.open('#exportOxdnaDialog'); document.getElementById('gidUpdateWarning').hidden = !topologyEdited"
+                        title="Options for downloading the current scene">
                         <span class="mif-floppy-disk mif-2x"></span>
                         <span class="caption">Simulation files</span>
                     </button>
@@ -108,7 +125,7 @@
                     </button>
                     <span class="title">oxDNA files</span>
                 </div>
-                <button class="ribbon-button" onclick="Metro.dialog.open('#export3D')"
+                <button class="ribbon-button" onclick="Metro.dialog.open('#export3DDialog')"
                     title="Options for 3d export of the scene.">
                     <span class="mif-file-download mif-3x"></span>
                     <span class="caption">3D Export</span>
@@ -123,6 +140,8 @@
                     <span class="caption">Create video</span>
                 </button>
             </div>
+
+            <!--Select-->
             <div class="section" id="section-select">
                 <div class="group">
                     <div class="ribbon-toggle-group toggleGroup_w2" id="selectionScope">
@@ -169,14 +188,16 @@
                     </div>
                     <span class="title">Selection mode</span>
                 </div>
-                <!-- <input id="baseList" class="cell-sm-2" data-role="taginput"> -->
                 <textarea id="baseList" cols="25" rows="3" readonly> Selected Bases List </textarea>
-                <div>
-                    <button class="ribbon-tool-button">
+                <div class="tight group flex-column">
+                    <input class="input-small" type="checkbox" id="selectPairs" data-role="checkbox" data-caption="Select pairs">
+                    <button class="ribbon-icon-button" onclick="selectAll()">
                         <span class="mif-done_all mif-1x"></span>
-                    </button><br>
-                    <button class="ribbon-tool-button">
+                        <span class="caption">Select all</span>
+                    </button>
+                    <button class="ribbon-icon-button" onclick="clearSelection()">
                         <span class="mif-not mif-1x"></span>
+                        <span class="caption">Clear selection</span>
                     </button>
                 </div>
                 <button class="ribbon-button">
@@ -224,7 +245,7 @@
                 </div>
 
                 <div class="tight group">
-                    <div class="ribbon-toggle-group toggleGroup_w1" id="transformType">
+                    <div class="ribbon-toggle-group toggleGroup_w1" id="transform">
                         <button class="ribbon-icon-button active">
                             <span class="icon">
                                 <span class="mif-not"></span>
@@ -292,23 +313,9 @@
                         style="text-transform: uppercase;"
                         oninput='document.getElementById("seqLen").innerHTML = this.value.length'>
                 </div>
-                <div class="tight group">
-                    <div class="ribbon-split-button">
-                        <button class="ribbon-main" id="clusterSim" onchange="toggleClusterSim()">
-                            <span class="icon">
-                                <span class="mif-play"></span>
-                            </span>
-                        </button>
-                        <span class="ribbon-split dropdown-toggle">Cluster dynamics</span>
-                        <ul class="ribbon-dropdown" data-role="dropdown" data-duration="100">
-                            <p>Cluster repulsion constant</p>
-                            <input type="text" data-role="spinner" class="input-small" data-step="10">
-                        </ul>
-                    </div>
-                </div>
-
-
             </div>
+
+
             <div class="section" id="section-view">
                 <div class="tight group">
                     <div class="group">
@@ -361,7 +368,7 @@
                         </div>
                         <span class="title">Centering</span>
                     </div>
-                    <button class="ribbon-button">
+                    <button class="ribbon-button" onclick="centerAndPBCBtnClick()" title="Note that this only works if you're going from none to something else or if you want to re-center after moving">
                         <span class="mif-done mif-3x"></span>
                         <span class="caption">Apply</span>
                     </button>
@@ -389,7 +396,7 @@
                     </div>
                 </div>
                 <div class="group">
-                    <div class="ribbon-toggle-group toggleGroup_w2">
+                    <div id="coloringMode" class="ribbon-toggle-group toggleGroup_w2">
                         <button class="ribbon-icon-button active">
                             <span class="icon">
                                 <span class="mif-flow-line"></span>
@@ -471,18 +478,42 @@
 
             </div>
 
-            <div class="section" id="section-oxserve">
-                <button class="ribbon-button" id="btnConnect" onclick="openConnections()" title="Live interactions.">
-                    <span class="mif-cast mif-3x"></span>
-                    <span id="cameraSwitch" class="caption">Connect</span>
-                </button>
-                <button class="ribbon-button" id="btnControlSim" onclick="toggleOptions('relaxConfigWindow')">
-                    <span class="mif-cogs mif-3x"></span>
-                    <span id="cameraSwitch" class="caption">Settings</span>
-                </button>
+            <div class="section" id="section-dynamics">
+                <div class="group">
+                    <button class="ribbon-button" id="clusterSim" onchange="toggleClusterSim()">
+                        <span class="icon">
+                            <span class="mif-play"></span>
+                        </span>
+                    </button>
+                    <div>
+                        <button class="ribbon-button dropdown-toggle">
+                            <span class="icon">
+                                <span class="mif-cogs mif-3x"></span>
+                            </span>
+                            <span class="caption">Settings</span>
+                        </button>
+                        <ul class="ribbon-dropdown" data-role="dropdown" data-duration="100" style="width: 200px;">
+                            <p>Cluster repulsion constant</p><input id='rbd_clusterRepulsionConst' value = 1000 type="text" data-role="spinner" class="input-small" data-step="100">
+                            <p>Connection spring constant</p><input id='rbd_connectionSpringConst' value = 10 type="text" data-role="spinner" class="input-small" data-step="10">
+                            <p>Connection relaxed length</p><input id='rbd_connectionRelaxedLength' value = 3 type="text" data-role="spinner" class="input-small" data-step="1">
+                            <p>Friction</p><input id='rbd_friction' value = 0.25 type="text" data-role="spinner" class="input-small" data-step="0.1">
+                            <p>dt</p><input id='rbd_dt' value = 0.1 type="text" data-role="spinner" class="input-small" data-step="0.01">
+                        </ul>
+                    </div>
+                    <span class="title">Rigid-body</span>
+                </div>
+                <div class="group">
+                    <button class="ribbon-button" id="btnConnect" onclick="openConnections()" title="Live interactions.">
+                        <span class="mif-cast mif-3x"></span>
+                        <span class="caption">Connect</span>
+                    </button>
+                    <button class="ribbon-button" id="btnControlSim" onclick="toggleOptions('relaxConfigWindow')">
+                        <span class="mif-cogs mif-3x"></span>
+                        <span class="caption">Settings</span>
+                    </button>
+                    <span class="title">Ox-Serve</span>
+                </div>
             </div>
-
-
         </div>
     </nav>
 

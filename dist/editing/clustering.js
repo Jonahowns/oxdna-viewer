@@ -13,9 +13,9 @@ function clearClusters() {
 function calculateClusters() {
     const minPts = parseFloat(document.getElementById("minPts").value);
     const epsilon = parseFloat(document.getElementById("epsilon").value);
-    longCalculation(() => { dbscan(minPts, epsilon); }, // Run this
+    view.longCalculation(() => { dbscan(minPts, epsilon); }, // Run this
     "Calculating clusters, please be patient...", // Tell the user
-    () => { setColoringMode("Cluster"); } // Then color by cluster
+    () => { view.setColoringMode("Cluster"); } // Then color by cluster
     );
 }
 /**

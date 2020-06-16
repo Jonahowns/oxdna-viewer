@@ -1,6 +1,7 @@
 function makeOutputFiles() { //makes .dat and .top files with update position information; includes all systems as 1 system
-    let name = (<HTMLInputElement>document.getElementById("outputFilename")).value;
-    let top = <NodeListOf<HTMLInputElement>>document.getElementsByName("topDownload");
+    let name = view.getInputValue("outputFilename");
+    let top = view.getInputBool("topDownload");
+
     let reorganized, counts;
     if (top[0].checked == true) {
         let {a, b, file_name, file} = makeTopFile(name);
@@ -12,7 +13,8 @@ function makeOutputFiles() { //makes .dat and .top files with update position in
         notify("You have edited the topology of the scene, a new topology file must be generated");
         return
     }
-    let dat = <NodeListOf<HTMLInputElement>>document.getElementsByName("datDownload");
+    let dat = view.getInputBool("datDownload");
+
     if (dat[0].checked == true) {
         let {file_name, file} = makeDatFile(name, reorganized);
         makeTextFile(file_name, file);	
@@ -35,18 +37,18 @@ function makeArrayBuffer(buffer, filename) {
 }
 
 function make3dOutput(){ //makes stl or gltf export from the scene
-    const name = (<HTMLInputElement>document.getElementById("3dExportFilename")).value;
-    const fileFormat = (<HTMLInputElement>document.getElementById("3dExportFormat")).value;
+    const name = view.getInputValue("3dExportFilename");
+    const fileFormat = view.getInputValue("3dExportFormat");
     
-    const include_backbone = (<HTMLInputElement>document.getElementById("includeBackbone")).checked;
-    const include_nucleoside = (<HTMLInputElement>document.getElementById("includeNucleoside")).checked;
-    const include_connector = (<HTMLInputElement>document.getElementById("includeConnector")).checked;
-    const include_bbconnector = (<HTMLInputElement>document.getElementById("includeBBconnector")).checked;
+    const include_backbone = view.getInputBool("includeBackbone");
+    const include_nucleoside = view.getInputBool("includeNucleoside");
+    const include_connector = view.getInputBool("includeConnector");
+    const include_bbconnector = view.getInputBool("includeBBconnector");
 
-    const flattenHierarchy = (<HTMLInputElement>document.getElementById("3dExportFlat")).checked;
+    const flattenHierarchy = view.getInputBool("3dExportFlat");
     
-    const faces_mul = parseFloat((<HTMLInputElement>document.getElementById("3dExportFacesMul")).value);
-    const stl_scale = parseFloat((<HTMLInputElement>document.getElementById("3dExportScale")).value);
+    const faces_mul = view.getInputNumber("3dExportFacesMul");
+    const stl_scale = view.getInputNumber("3dExportScale");
 
     if (fileFormat === 'stl') {
         saveSTL(name, include_backbone, include_nucleoside, include_connector, include_bbconnector, stl_scale, faces_mul);
@@ -286,7 +288,7 @@ function makePairTrapFile() {
         }
     }
     if (!pairsCalculated) {
-        longCalculation(findBasepairs, basepairMessage, write);
+        view.longCalculation(findBasepairs, view.basepairMessage, write);
     } else {
         write();
     }

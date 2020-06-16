@@ -88,8 +88,8 @@ function ligateWrapper() {
 }
 function extendWrapper(double) {
     let e = elements.get(listBases.slice(-1)[0]);
-    let seq = document.getElementById("sequence").value.toUpperCase();
-    let extendDuplex = document.getElementById("setCompl").checked;
+    let seq = view.getInputValue("sequence").toUpperCase();
+    let extendDuplex = view.getInputBool("setCompl");
     if (e == undefined) {
         notify("Please select a monomer to extend from");
         return;
@@ -108,8 +108,8 @@ function extendWrapper(double) {
     topologyEdited = true;
 }
 function createWrapper() {
-    let seq = document.getElementById("sequence").value.toUpperCase();
-    let createDuplex = document.getElementById("setCompl").checked;
+    let seq = view.getInputValue("sequence").toUpperCase();
+    let createDuplex = view.getInputBool("setCompl");
     if (seq == "") {
         notify("Please type a sequence into the box");
         return;
@@ -144,7 +144,7 @@ function skipWrapper() {
     topologyEdited = true;
 }
 function insertWrapper() {
-    let seq = document.getElementById("sequence").value.toUpperCase();
+    let seq = view.getInputValue("sequence").toUpperCase();
     if (seq == "") {
         notify("Please type a sequence into the box");
         return;
@@ -158,8 +158,8 @@ function insertWrapper() {
     topologyEdited = true;
 }
 function setSeqWrapper() {
-    let seq = document.getElementById("sequence").value.toUpperCase();
-    let setCompl = document.getElementById("setCompl").checked;
+    let seq = view.getInputValue("sequence").toUpperCase();
+    let setCompl = view.getInputBool("setCompl");
     if (seq == "") {
         notify("Please type a sequence into the box");
         return;

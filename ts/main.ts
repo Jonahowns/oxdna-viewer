@@ -107,14 +107,14 @@ render();
 
 //toggles display of coloring by json file / structure modeled off of base selector
 function coloringChanged() {
-    if (getColoringMode() === "Overlay") {
+    if (view.getColoringMode() === "Overlay") {
         if (lut) {
             if (colorbarScene.children.length == 0 && systems.some(system => system.colormapFile)) {
                 api.showColorbar();
             }
         } else {
             notify("Please drag and drop the corresponding .json file.");
-            setColoringMode("Strand");
+            view.setColoringMode("Strand");
             return;
         }
     } else if (lut) {
@@ -129,18 +129,6 @@ function coloringChanged() {
     }
     render();
 }
-
-function getColoringMode(): string {
-    return document.querySelector('input[name="coloring"]:checked')['value'];
-}
-
-function setColoringMode(mode: string) {
-    const modes = <NodeListOf<HTMLInputElement>>document.getElementsByName("coloring");
-    for (let i = 0; i < modes.length; i++) {
-        modes[i].checked = (modes[i].value === mode);
-    }
-    coloringChanged();
-};
 
 function findBasepairs() {
     elements.forEach(e => {

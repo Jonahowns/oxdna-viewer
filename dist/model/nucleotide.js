@@ -196,7 +196,7 @@ class Nucleotide extends BasicElement {
             color = selectionColor;
         }
         else {
-            switch (getColoringMode()) {
+            switch (view.getColoringMode()) {
                 case "Strand":
                     color = backboneColors[(Math.abs(this.strand.strandID) + this.getSystem().systemID) % backboneColors.length];
                     break;

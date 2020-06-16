@@ -30,7 +30,7 @@ function openConnections() {
     if(socket){
         socket.close();
     }
-    toggleModal('socketConnections');
+    view.toggleModal('socketConnections');
 }
 
 
@@ -109,7 +109,7 @@ class OXServeSocket extends WebSocket{
         let connect_button =  (document.getElementById("btnConnect") as HTMLSelectElement);
         connect_button.style.backgroundColor = "green";
         connect_button.textContent = "Connected!"
-        toggleModal('socketConnections');
+        view.toggleModal('socketConnections');
     }
 
     onclose = (resonse) => {

@@ -84,28 +84,6 @@ function drawSystemHierarchy() {
         });
     }
 }
-function toggleSideNav(button) {
-    let hidden = "show toolbar";
-    let visible = "hide toolbar";
-    let content = document.getElementById("sidenavContent");
-    if (button.innerText.toLowerCase() == hidden) {
-        //tabcontent[0].style.display = "block";
-        content.hidden = false;
-        button.innerHTML = visible;
-    }
-    else {
-        content.hidden = true;
-        button.innerHTML = hidden;
-    }
-}
-function toggleFieldSet(elem) {
-    let elems = elem.parentElement.children;
-    for (let i = 0; i < elems.length; i++) {
-        if (elems[i] !== elem) {
-            elems[i]['hidden'] = !elems[i]['hidden'];
-        }
-    }
-}
 function handleMenuAction(event) {
     switch (event) {
         case "undo":
@@ -136,14 +114,6 @@ function handleMenuAction(event) {
             clearSelection();
             break;
     }
-}
-function toggleModal(id) {
-    let modal = document.getElementById(id);
-    modal.classList.toggle("show-modal");
-}
-function toggleOptions(id) {
-    let opt = document.getElementById(id);
-    opt.hidden = !opt.hidden;
 }
 function colorOptions() {
     const opt = document.getElementById("colorOptionContent");
@@ -226,7 +196,7 @@ function colorSelection() {
                     console.log(emptyTmpSystems);
                     initLutCols(emptyTmpSystems);
                 }
-                setColoringMode("Overlay");
+                view.setColoringMode("Overlay");
             }
             initLutCols(systems);
             initLutCols(tmpSystems);
@@ -239,14 +209,14 @@ function colorSelection() {
                 sid = e["gid"] - e.getSystem().globalStartId;
                 e.getSystem().lutCols[sid] = selectedColor;
             });
-            setColoringMode("Overlay");
+            view.setColoringMode("Overlay");
             if (!systems.some(system => system.colormapFile)) {
                 api.removeColorbar();
             }
             clearSelection();
         };
         resetButton.onclick = () => {
-            setColoringMode("Strand");
+            view.setColoringMode("Strand");
             initLutCols(systems);
             initLutCols(tmpSystems);
             clearSelection();
@@ -305,53 +275,94 @@ function notify(message) {
     setTimeout(remove, 5000);
     console.info(`Notification: ${message}`);
 }
-let basepairMessage = "Locating basepairs, please be patient...";
-function longCalculation(calc, message, callback) {
-    // Create an information modal
-    const modal = document.getElementById('pause');
-    const notification = document.createElement('div');
-    notification.className = "modal-content";
-    notification.innerHTML = message;
-    modal.appendChild(notification);
-    modal.classList.add("show-modal");
-    // Set wait cursor and request an animation frame to make sure
-    // that it gets changed before starting calculation:
-    let dom = document.activeElement;
-    dom['style'].cursor = "wait";
-    requestAnimationFrame(() => requestAnimationFrame(() => {
-        try {
-            calc();
+class View {
+    constructor(doc) {
+        this.basepairMessage = "Locating basepairs, please be patient...";
+        this.doc = doc;
+    }
+    setToggleGroupValue(id, value) {
+        let toggleGroup = this.doc.getElementById(id);
+        let active = toggleGroup.querySelector('.active');
+        if (active) {
+            active.classList.remove('active');
         }
-        catch (error) {
-            notify(`Sorry, something went wrong with the calculation: ${error}`);
+        for (let opt of toggleGroup.children) {
+            if (opt.querySelector('.caption').innerHTML == value) {
+                opt.classList.add('active');
+                return;
+            }
         }
-        // Change cursor back and remove modal
-        dom['style'].cursor = "auto";
-        modal.removeChild(notification);
-        modal.classList.remove("show-modal");
-        if (callback) {
-            callback();
-        }
-    }));
+    }
+    getToggleGroupValue(id) {
+        return this.doc.getElementById(id).querySelector('.active').querySelector('.caption').innerHTML;
+    }
+    getInputNumber(id) {
+        return this.doc.getElementById(id).valueAsNumber;
+    }
+    getInputValue(id) {
+        return this.doc.getElementById(id).value;
+    }
+    getInputBool(id) {
+        return document.getElementById(id).checked;
+    }
+    toggleModal(id) {
+        ;
+    }
+    // nucleotides/strand/system
+    getSelectionMode() {
+        return this.getToggleGroupValue('selectionScope');
+    }
+    selectionEnabled() {
+        return this.getSelectionMode() != "Disabled";
+    }
+    selectPairs() {
+        return this.doc.getElementById("selectPairs").checked;
+    }
+    getCenteringSetting() {
+        return this.getToggleGroupValue('centering');
+    }
+    getInboxingSetting() {
+        return this.getToggleGroupValue('inboxing');
+    }
+    getTransformSetting() {
+        return this.getToggleGroupValue('transform');
+    }
+    transformEnabled() {
+        return this.getTransformSetting() != "None";
+    }
+    getColoringMode() {
+        return this.getToggleGroupValue('coloringMode');
+    }
+    setColoringMode(mode) {
+        this.setToggleGroupValue('coloringMode', mode);
+        coloringChanged();
+    }
+    ;
+    longCalculation(calc, message, callback) {
+        let activity = Metro.activity.open({
+            type: 'square',
+            overlayColor: '#fff',
+            overlayAlpha: 1,
+            text: message
+        });
+        // Set wait cursor and request an animation frame to make sure
+        // that it gets changed before starting calculation:
+        let dom = document.activeElement;
+        dom['style'].cursor = "wait";
+        requestAnimationFrame(() => requestAnimationFrame(() => {
+            try {
+                calc();
+            }
+            catch (error) {
+                notify(`Sorry, something went wrong with the calculation: ${error}`);
+            }
+            // Change cursor back and remove modal
+            dom['style'].cursor = "auto";
+            Metro.activity.close(activity);
+            if (callback) {
+                callback();
+            }
+        }));
+    }
 }
-function getToggleGroupValue(id) {
-    let value = undefined;
-    Array.from(document.getElementById(id).children).forEach(i => {
-        let classes = Array.from(i.classList);
-        if (classes.includes("active")) {
-            Array.from(i.children).forEach(j => {
-                classes = Array.from(j.classList);
-                if (classes.includes("caption")) {
-                    value = j.innerHTML;
-                }
-            });
-        }
-    });
-    return value;
-}
-function getCenteringSetting() {
-    return getToggleGroupValue('centering');
-}
-function getInboxingSetting() {
-    return getToggleGroupValue('inboxing');
-}
+let view = new View(document);

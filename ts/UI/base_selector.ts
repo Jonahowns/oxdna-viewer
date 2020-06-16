@@ -20,11 +20,12 @@ canvas.addEventListener('mousemove', event => {
 
 canvas.addEventListener('mousedown', event => { //if mouse is pressed down
 	canvas.focus(); // Make sure canvas has focus (to capture any keyboard events)
-	if (getActionModes().includes("Select")) {
+	if (view.selectionEnabled()) {
 		let id = gpuPicker(event)
 
 		//if something was clicked, toggle the coloration of the appropriate things.
-		if (id > -1) {
+		if (id > -1 && !transformControls.isHovered()) {
+			console.log(`Clicked on ${id}`);
 
 			// This runs after the selection is done and the nucleotides are toggled,
 			// but it needs to be defined as a callback since the cluster selection
@@ -39,7 +40,7 @@ canvas.addEventListener('mousedown', event => { //if mouse is pressed down
 			}
 			
 			let strandCount = sys.strands.length;
-			switch(getScopeMode()){
+			switch(view.getSelectionMode()){
 				case "System" :
 					sys.strands.forEach(strand=>{
 						strand.monomers.forEach(e=>{
@@ -52,9 +53,9 @@ canvas.addEventListener('mousedown', event => { //if mouse is pressed down
 					let strandLength = nucleotide.strand.monomers.length;
 					for (let i= 0; i < strandLength; i++) { //for every nucleotide in strand
 						nucleotide.strand.monomers[i].toggle();
-						if(selectPairs()) {
+						if(view.selectPairs()) {
 							if (!nucleotide.isPaired()) {
-								longCalculation(findBasepairs, basepairMessage,
+								view.longCalculation(findBasepairs, view.basepairMessage,
 								()=>{selectPaired(nucleotide.strand.monomers[i]);updateView(sys);});
 							} else {
 								selectPaired(nucleotide.strand.monomers[i]);
@@ -66,9 +67,9 @@ canvas.addEventListener('mousedown', event => { //if mouse is pressed down
 				case "Monomer":
 					nucleotide.toggle();
 					if(event.shiftKey) {
-						if(selectPairs()){
+						if(view.selectPairs()){
 							if(!nucleotide.isPaired()) {
-								longCalculation(findBasepairs, basepairMessage,
+								view.longCalculation(findBasepairs, view.basepairMessage,
 								()=>{fancySelectIntermediate(nucleotide);updateView(sys);});
 							} else {
 								fancySelectIntermediate(nucleotide);
@@ -80,9 +81,9 @@ canvas.addEventListener('mousedown', event => { //if mouse is pressed down
 								selectIntermediate();
 							}
 						}
-					} else if(selectPairs()) {
+					} else if(view.selectPairs()) {
 						if(!nucleotide.isPaired()) {
-							longCalculation(findBasepairs, basepairMessage,
+							view.longCalculation(findBasepairs, view.basepairMessage,
 							()=>{selectPaired(nucleotide);updateView(sys);});
 						} else {
 							selectPaired(nucleotide);
@@ -116,7 +117,7 @@ canvas.addEventListener('mousedown', event => { //if mouse is pressed down
 				});
 			}
 
-			if (selectedBases.size > 0 && getActionModes().includes("Transform")) {
+			if (selectedBases.size > 0 && view.transformEnabled()) {
 				transformControls.show();
 			} else {
 				transformControls.hide();
@@ -193,7 +194,7 @@ function invertSelection() {
 	systems.forEach(sys => {
 		updateView(sys);
 	});
-	if (selectedBases.size > 0 && getActionModes().includes("Transform")) {
+	if (selectedBases.size > 0 && view.transformEnabled()) {
 		transformControls.show();
 	} else {
 		transformControls.hide();
@@ -209,7 +210,7 @@ function selectAll() {
 	systems.forEach(sys => {
 		updateView(sys);
 	});
-	if (selectedBases.size > 0 && getActionModes().includes("Transform")) {
+	if (selectedBases.size > 0 && view.transformEnabled()) {
 		transformControls.show();
 	}
 }
@@ -224,10 +225,10 @@ function selectPaired(e: BasicElement) {
 }
 
 function fancySelectIntermediate(e: BasicElement) {
-	let paired = selectPairs();
+	let paired = view.selectPairs();
 	let d = new Dijkstra(Array.from(elements.values()), paired);
 	let elems: BasicElement[] = [];
-	longCalculation(()=>{
+	view.longCalculation(()=>{
 		elems = d.shortestPath(e, Array.from(selectedBases));
 	},"Calculating intermediate elements...",
 	()=>{
@@ -279,7 +280,7 @@ function makeTextArea(bases: string, id) { //insert "bases" string into text are
 
 let boxSelector;
 canvas.addEventListener('mousemove', event => {
-	if (boxSelector && getActionModes().includes("Select") && getScopeMode() === "Box") {
+	if (boxSelector && view.selectionEnabled() && view.getSelectionMode() === "Box") {
 		// Box selection
 		event.preventDefault();
 		boxSelector.redrawBox(new THREE.Vector2(event.clientX, event.clientY));
@@ -288,7 +289,7 @@ canvas.addEventListener('mousemove', event => {
 
 
 canvas.addEventListener('mousedown', event => {
-	if (getActionModes().includes("Select") && getScopeMode() === "Box") {
+	if (view.selectionEnabled() && view.getSelectionMode() === "Box") {
 		// Box selection
 		event.preventDefault();
 
@@ -309,7 +310,7 @@ canvas.addEventListener('mousedown', event => {
 }, false);
 
 let onDocumentMouseCancel = event => {
-	if (boxSelector && getActionModes().includes("Select") && getScopeMode() === "Box") {
+	if (boxSelector && view.selectionEnabled() && view.getSelectionMode() === "Box") {
 		// Box selection
 		event.preventDefault();
 
@@ -325,7 +326,7 @@ let onDocumentMouseCancel = event => {
 			}
 		});
 
-		if (selectedBases.size > 0 && getActionModes().includes("Transform")) {
+		if (selectedBases.size > 0 && view.transformEnabled()) {
 			transformControls.show();
 		} else {
 			transformControls.hide();

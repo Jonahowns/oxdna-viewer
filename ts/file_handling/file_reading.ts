@@ -75,9 +75,14 @@ var toggleFailure: Boolean = false,
 target.addEventListener("drop", function (event) {
     // cancel default actions
     event.preventDefault();
+    const files = event.dataTransfer.files;
+    handleFiles(files);
 
-    const files = event.dataTransfer.files,
-        filesLen = files.length;
+}, false);
+
+function handleFiles(files: FileList) {
+
+    const filesLen = files.length;
 
     let topFile, jsonFile, trapFile;
 
@@ -136,8 +141,7 @@ target.addEventListener("drop", function (event) {
         renderer.domElement.style.cursor = "auto"; 
     }
     render();
-}, false);
-
+}
 
 let trap_objs = [];
 let trap_file = "";
@@ -369,7 +373,7 @@ function readJson(system, jsonReader) {
                 system.setColorFile(data);
                 makeLut(data, key);
                 try{ //you need to toggle here for small systems, during the scene add for large systems because asynchronous reading.
-                    setColoringMode("Overlay");
+                    view.setColoringMode("Overlay");
                 }
                 catch {
                     toggleFailure = true;
@@ -655,7 +659,7 @@ function addSystemToScene(system: System) {
 
     // Catch an error caused by asynchronous readers and different file sizes
     if(toggleFailure){
-        setColoringMode("Overlay");
+        view.setColoringMode("Overlay");
     }
 
     render();

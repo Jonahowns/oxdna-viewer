@@ -24,7 +24,7 @@ function openConnections() {
     if (socket) {
         socket.close();
     }
-    toggleModal('socketConnections');
+    view.toggleModal('socketConnections');
 }
 function deleteOXServeCon(id) {
     document.getElementById(`oxIP${id}_3`).remove();
@@ -86,7 +86,7 @@ class OXServeSocket extends WebSocket {
             let connect_button = document.getElementById("btnConnect");
             connect_button.style.backgroundColor = "green";
             connect_button.textContent = "Connected!";
-            toggleModal('socketConnections');
+            view.toggleModal('socketConnections');
         };
         this.onclose = (resonse) => {
             let connect_button = document.getElementById("btnConnect");

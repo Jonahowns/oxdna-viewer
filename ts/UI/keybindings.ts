@@ -74,7 +74,7 @@ canvas.addEventListener("keydown", event =>{
                 showTransformControl("translate");
             }
             break;
-        case 'f1': toggleModal("keyboardShortcuts"); break;
+        case 'f1': view.toggleModal("keyboardShortcuts"); break;
     }
     // Key is value of the key, e.g. '1', while code is the id of
     // the specific key, e.g. 'Numpad1'.

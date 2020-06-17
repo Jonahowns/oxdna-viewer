@@ -134,17 +134,10 @@ function handleMenuAction(event: String) {
     }
 }
 
-function colorOptions() {
-    const opt: HTMLElement = document.getElementById("colorOptionContent");
+function updateColorPalette() {
+    const opt: HTMLElement = document.getElementById("colorPaletteContent");
     if (!opt.hidden) {
         opt.innerHTML = "";  //Clear content
-        const addButton = document.createElement('button');
-        addButton.innerText = "Add Color";
-        // Append new color to the end of the color list and reset colors
-        addButton.onclick = function () {
-            backboneColors.push(new THREE.Color(0x0000ff));
-            colorOptions();
-        }
 
         //modifies the backboneColors array
         for (let i = 0; i < backboneColors.length; i++) {
@@ -154,19 +147,18 @@ function colorOptions() {
             c.value = "#" + m.getHexString();
             c.onchange = function () {
                 backboneColors[i] = new THREE.Color(c.value);
-                colorOptions();
+                updateColorPalette();
             }
             
             //deletes color on right click
             c.oncontextmenu = function (event) {
                 event.preventDefault();
                 backboneColors.splice(i, 1);
-                colorOptions();
+                updateColorPalette();
                 return false;
             }
             opt.appendChild(c);
         }
-        opt.appendChild(addButton);
 
         //actually update things in the scene
         elements.forEach(e=>{
@@ -317,6 +309,10 @@ class View {
         return this.doc.getElementById(id).querySelector('.active').querySelector('.caption').innerHTML;
     }
 
+    public getRandomHue(): THREE.Color {
+        return new THREE.Color(`hsl(${Math.random()*360}, 100%, 50%)`);
+    }
+
     public getInputNumber(id: string): number {
         return (<HTMLInputElement>this.doc.getElementById(id)).valueAsNumber;
     }
@@ -396,7 +392,7 @@ class View {
 
     public setColoringMode(mode: string) {
         this.setToggleGroupValue('coloringMode', mode);
-        coloringChanged();
+        updateColoring();
     };
 
     public handleTransformMode(mode: string) {

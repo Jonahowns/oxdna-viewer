@@ -393,37 +393,37 @@
                 </div>
                 <div class="group">
                     <div id="coloringMode" class="ribbon-toggle-group toggleGroup_w2">
-                        <button class="ribbon-icon-button active">
+                        <button class="ribbon-icon-button active" onclick="updateColoring('Strand')">
                             <span class="icon">
                                 <span class="mif-flow-line"></span>
                             </span>
                             <span class="caption">Strand</span>
                         </button>
 
-                        <button class="ribbon-icon-button">
+                        <button class="ribbon-icon-button" onclick="updateColoring('Cluster')">
                             <span class="icon">
                                 <span class="mif-cloudy4"></span>
                             </span>
                             <span class="caption">Cluster</span>
                         </button>
 
-                        <button class="ribbon-icon-button">
+                        <button class="ribbon-icon-button" onclick="updateColoring('System')">
                             <span class="icon">
                                 <span class="mif-flow-tree"></span>
                             </span>
                             <span class="caption">System</span>
                         </button>
 
-                        <button class="ribbon-icon-button">
+                        <button class="ribbon-icon-button" onclick="updateColoring('Overlay')">
                             <span class="icon">
                                 <span class="mif-chart-dots"></span>
                             </span>
                             <span class="caption">Overlay</span>
                         </button>
                     </div>
-                    <button class="ribbon-button">
+                    <button class="ribbon-button" onclick="view.toggleWindow('colorPaletteWindow', updateColorPalette)">
                         <span class="mif-palette mif-2x"></span>
-                        <span class="caption">Edit colors</span>
+                        <span class="caption">Edit color palette</span>
                     </button>
                     <button class="ribbon-button">
                         <span class="mif-pencil mif-2x"></span>

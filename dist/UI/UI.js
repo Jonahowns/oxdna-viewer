@@ -115,17 +115,10 @@ function handleMenuAction(event) {
             break;
     }
 }
-function colorOptions() {
-    const opt = document.getElementById("colorOptionContent");
+function updateColorPalette() {
+    const opt = document.getElementById("colorPaletteContent");
     if (!opt.hidden) {
         opt.innerHTML = ""; //Clear content
-        const addButton = document.createElement('button');
-        addButton.innerText = "Add Color";
-        // Append new color to the end of the color list and reset colors
-        addButton.onclick = function () {
-            backboneColors.push(new THREE.Color(0x0000ff));
-            colorOptions();
-        };
         //modifies the backboneColors array
         for (let i = 0; i < backboneColors.length; i++) {
             let m = backboneColors[i];
@@ -134,18 +127,17 @@ function colorOptions() {
             c.value = "#" + m.getHexString();
             c.onchange = function () {
                 backboneColors[i] = new THREE.Color(c.value);
-                colorOptions();
+                updateColorPalette();
             };
             //deletes color on right click
             c.oncontextmenu = function (event) {
                 event.preventDefault();
                 backboneColors.splice(i, 1);
-                colorOptions();
+                updateColorPalette();
                 return false;
             };
             opt.appendChild(c);
         }
-        opt.appendChild(addButton);
         //actually update things in the scene
         elements.forEach(e => {
             if (!selectedBases.has(e)) {
@@ -276,6 +268,9 @@ class View {
     getToggleGroupValue(id) {
         return this.doc.getElementById(id).querySelector('.active').querySelector('.caption').innerHTML;
     }
+    getRandomHue() {
+        return new THREE.Color(`hsl(${Math.random() * 360}, 100%, 50%)`);
+    }
     getInputNumber(id) {
         return this.doc.getElementById(id).valueAsNumber;
     }
@@ -339,7 +334,7 @@ class View {
     }
     setColoringMode(mode) {
         this.setToggleGroupValue('coloringMode', mode);
-        coloringChanged();
+        updateColoring();
     }
     ;
     handleTransformMode(mode) {

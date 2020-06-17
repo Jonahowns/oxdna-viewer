@@ -222,7 +222,7 @@ module api{
                     system.lutCols[i] = lut.getColor(Number(system.colormapFile[key][i]));
                 }
             }
-            coloringChanged();
+            updateColoring();
         }
         else {
             defaultColormap = name;
@@ -243,7 +243,7 @@ module api{
                 system.lutCols[i] = lut.getColor(Number(system.colormapFile[key][i]));
             }
         }
-        coloringChanged();
+        updateColoring();
     }
     
     export function spOnly() {

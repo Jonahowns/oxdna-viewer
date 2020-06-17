@@ -219,7 +219,7 @@ var api;
                     system.lutCols[i] = lut.getColor(Number(system.colormapFile[key][i]));
                 }
             }
-            coloringChanged();
+            updateColoring();
         }
         else {
             defaultColormap = name;
@@ -240,7 +240,7 @@ var api;
                 system.lutCols[i] = lut.getColor(Number(system.colormapFile[key][i]));
             }
         }
-        coloringChanged();
+        updateColoring();
     }
     api.setColorBounds = setColorBounds;
     function spOnly() {

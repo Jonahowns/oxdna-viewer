@@ -226,7 +226,7 @@ module edit{
         );
 
         //since strand IDs were updated, we also need to update the coloring
-        coloringChanged();
+        updateColoring();
 
         //connect the 2 element objects 
         end5.neighbor5 = end3;

@@ -106,8 +106,13 @@ readFilesFromURLParams();
 render();
 
 //toggles display of coloring by json file / structure modeled off of base selector
-function coloringChanged() {
-    if (view.getColoringMode() === "Overlay") {
+function updateColoring(mode?: string) {
+    if(!mode) {
+        mode = view.getColoringMode()
+    } else {
+        view.setColoringMode(mode);
+    }
+    if (mode === "Overlay") {
         if (lut) {
             if (colorbarScene.children.length == 0 && systems.some(system => system.colormapFile)) {
                 api.showColorbar();

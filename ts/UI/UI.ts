@@ -285,31 +285,9 @@ function toggleVisArbitrary() {
     clearSelection();
 }
 
-function notify(message: string) {
-    const noticeboard = document.getElementById('noticeboard');
-
-    // Remove any identical notifications from the board
-    for (let notification of noticeboard.children) {
-        if (notification.innerHTML === message) {
-            noticeboard.removeChild(notification);
-        }
-    }
-
-    // Create a new notification
-    const notification = document.createElement('div');
-    notification.className = "notification";
-    notification.innerHTML = message;
-
-    // Add it to the board and remove it on mouseover
-    // or after 5 seconds
-    const remove = function() {
-        try {noticeboard.removeChild(notification);}
-        catch (e) {} // Notification already removed
-    }
-    notification.onmouseover = remove;
-    noticeboard.appendChild(notification);
-    setTimeout(remove, 5000);
-
+function notify(message: string, title?: string, opt?: any) {
+    let n = Metro.notify;
+    n.create(message, title, opt);
     console.info(`Notification: ${message}`);
 }
 

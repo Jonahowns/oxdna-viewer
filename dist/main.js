@@ -139,11 +139,11 @@ function dot(x1, y1, z1, x2, y2, z2) {
 function divAndNeg(mat, divisor) {
     return [-mat[0] / divisor, -mat[1] / divisor, -mat[2] / divisor];
 }
-/*
 //Temporary solution to adding configuration storage
-//This section sets interface values from the storage
-if (window.sessionStorage.centerOption)
-(document.getElementById("centering") as HTMLSelectElement).value = window.sessionStorage.centerOption;
-if (window.sessionStorage.inboxingOption)
-(document.getElementById("inboxing") as HTMLSelectElement).value = window.sessionStorage.inboxingOption ;
-*/
+//This section sets interface values from the storage 
+if (window.sessionStorage.centerOption) {
+    view.setCenteringSetting(window.sessionStorage.centerOption);
+}
+if (window.sessionStorage.inboxingOption) {
+    view.setInboxingSetting(window.sessionStorage.inboxingOption);
+}

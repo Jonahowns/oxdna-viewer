@@ -370,8 +370,16 @@ class View {
         return this.getToggleGroupValue('centering');
     }
 
+    public setCenteringSetting(setting: string) {
+        return this.setToggleGroupValue('centering', setting);
+    }
+
     public getInboxingSetting() {
         return this.getToggleGroupValue('inboxing');
+    }
+
+    public setInboxingSetting(setting: string) {
+        return this.setToggleGroupValue('inboxing', setting);
     }
 
     public getTransformSetting() {
@@ -390,6 +398,26 @@ class View {
         this.setToggleGroupValue('coloringMode', mode);
         coloringChanged();
     };
+
+    public handleTransformMode(mode: string) {
+        // Make sure that buttons correspond to specified mode
+        this.setToggleGroupValue('transform', mode);
+
+        // If we should show something
+        if (mode != "None") {
+            // Make sure something is selected
+            if (selectedBases.size > 0) {
+                transformControls.show();
+                transformControls.setMode(mode.toLowerCase());
+            } else {
+                notify("Please select elements to transform");
+                // Reset buttons to none
+                this.setToggleGroupValue('transform', 'None');
+            }
+        } else {
+            transformControls.hide()
+        }
+    }
 
     public longCalculation(calc: () => void, message: string, callback?: () => void) {
         let activity = Metro.activity.open({

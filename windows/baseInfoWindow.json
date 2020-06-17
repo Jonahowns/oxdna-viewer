@@ -1,8 +1,6 @@
 {
     "resizable": true,
-    "place": "center",
-    "btn-max": false,
-    "shadow": true,
+    "place": "top-center",
     "width": 300,
     "title": "Selected base info"
 }

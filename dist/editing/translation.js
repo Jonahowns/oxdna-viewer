@@ -1,28 +1,3 @@
-function showTransformControl(mode) {
-    const modes = document.getElementsByName("transform");
-    // Make sure that radio buttons correspond to specified mode
-    for (let i = 0; i < modes.length; i++) {
-        modes[i].checked = (modes[i].value === mode);
-    }
-    // If we should show something
-    if (mode != "none") {
-        // Make sure something is selected
-        if (selectedBases.size > 0) {
-            transformControls.show();
-            transformControls.setMode(mode);
-        }
-        else {
-            notify("Please select elements to transform");
-            // Reset radio buttons to none
-            for (let i = 0; i < modes.length; i++) {
-                modes[i].checked = (modes[i].value === "none");
-            }
-        }
-    }
-    else {
-        transformControls.hide();
-    }
-}
 //THREE quaternions are in (x, y, z, w) order
 //GLSL quaternions are in (w, z, y, x) order
 //So when you need to convert between them...

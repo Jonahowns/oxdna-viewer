@@ -82,10 +82,10 @@ canvas.addEventListener("keydown", event => {
             break;
         // Transform controls:
         case 't':
-            showTransformControl('translate');
+            view.handleTransformMode('Translate');
             break;
         case 'r':
-            showTransformControl('rotate');
+            view.handleTransformMode('Rotate');
             break;
         case 'shift':
             transformControls.setTranslationSnap(1);
@@ -105,10 +105,10 @@ canvas.addEventListener("keydown", event => {
         // Toggle dragging:
         case 'd':
             if (transformControls.visible) {
-                showTransformControl("none");
+                view.handleTransformMode("None");
             }
             else {
-                showTransformControl("translate");
+                view.handleTransformMode("Translate");
             }
             break;
         case 'f1':

@@ -43,4 +43,5 @@ canvas {
 
 .window {
     z-index: 999;
+    max-height: 90%;
 }

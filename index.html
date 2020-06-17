@@ -194,7 +194,7 @@
                         <span class="caption">Clear selection</span>
                     </button>
                 </div>
-                <button class="ribbon-button" onclick="view.toggleWindow('baseInfoWindow', ()=>{updateView(systems[0])})">
+                <button class="ribbon-button" onclick="view.toggleWindow('baseInfoWindow', ()=>{if(systems.length>0){updateView(systems[0])}})">
                     <span class="mif-list mif-3x"></span>
                     <span class="caption">Selected base info</span>
                 </button>
@@ -240,21 +240,21 @@
 
                 <div class="tight group">
                     <div class="ribbon-toggle-group toggleGroup_w1" id="transform">
-                        <button class="ribbon-icon-button active">
+                        <button class="ribbon-icon-button active" onclick="view.handleTransformMode('None')">
                             <span class="icon">
                                 <span class="mif-not"></span>
                             </span>
                             <span class="caption">None</span>
                         </button>
 
-                        <button class="ribbon-icon-button">
+                        <button class="ribbon-icon-button" onclick="view.handleTransformMode('Translate')">
                             <span class="icon">
                                 <span class="mif-enlarge"></span>
                             </span>
                             <span class="caption">Translate</span>
                         </button>
 
-                        <button class="ribbon-icon-button">
+                        <button class="ribbon-icon-button" onclick="view.handleTransformMode('Rotate')">
                             <span class="icon">
                                 <span class="mif-3d-rotation"></span>
                             </span>
@@ -264,15 +264,15 @@
                 </div>
 
                 <div class="tight group">
-                    <button class="ribbon-button">
+                    <button class="ribbon-button" onclick="nickWrapper()" title="break the upstream connection of the last selected particle">
                         <span class="mif-cut mif-2x"></span>
                         <span class="caption">Nick</span>
                     </button>
-                    <button class="ribbon-button">
+                    <button class="ribbon-button" onclick="deleteWrapper()" title="delete the selected monomers">
                         <span class="mif-copy mif-2x"></span>
                         <span class="caption">Delete</span>
                     </button>
-                    <button class="ribbon-button">
+                    <button class="ribbon-button" onclick="ligateWrapper()" title="ligate the last two selected particles together">
                         <span class="mif-paste mif-2x"></span>
                         <span class="caption">Ligate</span>
                     </button>
@@ -280,30 +280,32 @@
 
                 <div class="tight group flex-column" style="width: 470px">
                     <div>
-                        <input type="checkbox" id="setCompl" data-role="checkbox" data-caption="Duplex mode">
-                        <button class="ribbon-icon-button">
+                        <input type="checkbox" id="setCompl" data-role="checkbox" data-caption="Duplex mode" title="Set also complementary bases">
+                        <button class="ribbon-icon-button" onclick="setSeqWrapper()" title="Apply the given sequence to the selected monomers">
                             <span class="mif-pencil mif-1x"></span>
                             <span class="caption">Set</span>
                         </button>
-                        <button class="ribbon-icon-button">
+                        <button class="ribbon-icon-button" onclick="extendWrapper(false)" title="Extend strand (or duplex) from the selected monomer with the given sequence">
                             <span class="mif-plus mif-1x"></span>
                             <span class="caption">Extend</span>
                         </button>
-                        <button class="ribbon-icon-button">
+                        <button class="ribbon-icon-button" onclick="createWrapper()" title="Create a new strand (or duplex) with the provided sequences">
                             <span class="mif-cut mif-1x"></span>
                             <span class="caption">Create</span>
                         </button>
-                        <button class="ribbon-icon-button">
+                        <button class="ribbon-icon-button" onclick="insertWrapper()" title="Insert elements of the provided sequences upstream of the last selected particle">
                             <span class="mif-cut mif-1x"></span>
                             <span class="caption">Insert</span>
                         </button>
-                        <button class="ribbon-icon-button">
+                        <button class="ribbon-icon-button" onclick="skipWrapper()" title="Remove selected elements and connect neigbours">
                             <span class="mif-cut mif-1x"></span>
                             <span class="caption">Skip</span>
                         </button>
                     </div>
                     <input type="text" data-role="input" id="sequence" class="mb-1"
                         data-append="<span id='seqLen'>0</span>" data-prepend="<span'>Seq</span>"
+                        data-history="true" data-prevent-submit="true"
+                        placeholder="Type a sequence here"
                         style="text-transform: uppercase;"
                         oninput='document.getElementById("seqLen").innerHTML = this.value.length'>
                 </div>
@@ -321,7 +323,7 @@
                                 <span class="caption">None</span>
                             </button>
 
-                            <button class="ribbon-icon-button">
+                            <button class="ribbon-icon-button active">
                                 <span class="icon">
                                     <span class="mif-location"></span>
                                 </span>
@@ -369,13 +371,13 @@
                 </div>
                 <div class="tight group flex-column">
                     <div style="height: 27px;"><input type="checkbox" id="arrowToggle" onchange="toggleArrows(this)"
-                            data-role="switch" data-caption="Display Arrows" checked>
+                            data-role="switch" data-caption="Arrows" checked>
                     </div>
                     <div style="height: 27px;"><input type="checkbox" id="boxToggle" onchange="toggleBox(this)"
-                            data-role="switch" data-caption="Display Box">
+                            data-role="switch" data-caption="Box">
                     </div>
                     <div style="height: 27px;"><input type="checkbox" id="boxToggle" onchange="toggleFog()"
-                            data-role="switch" data-caption="Display Fog">
+                            data-role="switch" data-caption="Fog">
                         <span class="ribbon-split dropdown-toggle"></span>
                         <ul class="ribbon-dropdown" data-role="dropdown" data-duration="100">
                             <label for="fogNear">Near: </label>
@@ -537,6 +539,7 @@
         <script src="./dist/editing/doUndo.js"></script>
         <script src="./dist/editing/dijkstra.js"></script>
         <script src="./dist/editing/rigid-body_simulation.js"></script>
+        <script src="./dist/UI/UI.js"></script>
         <script src="./dist/main.js"></script>
         <script src="./dist/model/basicElement.js"></script>
         <script src="./dist/model/aminoAcid.js"></script>
@@ -548,7 +551,6 @@
         <script src="./dist/model/anm.js"></script>
         <script src="./dist/UI/base_selector.js"></script>
         <script src="./dist/UI/keybindings.js"></script>
-        <script src="./dist/UI/UI.js"></script>
         <script src="./dist/file_handling/output_file.js"></script>
         <script src="./dist/file_handling/video.js"></script>
         <script src="./dist/editing/translation.js"></script>

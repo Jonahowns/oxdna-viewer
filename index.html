@@ -35,12 +35,6 @@
         </ul>
     </aside>
 
-    <!--
-    <div class="p-2" data-role="window" data-draggable="true" data-place="center" data-btn-max="false" data-shadow="true"
-        data-width="200" data-height="160" data-title="3D Export">
-    </div>
-    -->
-
     <div id='openFileDialog' class="dialog" data-role="dialog">
         <input id='fileInput' type="file" multiple="multiple" data-role="file" data-mode="drop">    
         <div class="dialog-actions">
@@ -200,7 +194,7 @@
                         <span class="caption">Clear selection</span>
                     </button>
                 </div>
-                <button class="ribbon-button">
+                <button class="ribbon-button" onclick="view.toggleWindow('baseInfoWindow', ()=>{updateView(systems[0])})">
                     <span class="mif-list mif-3x"></span>
                     <span class="caption">Selected base info</span>
                 </button>
@@ -345,7 +339,7 @@
                     </div>
                     <div class="group">
                         <div id="centering" class="ribbon-toggle-group toggleGroup_w1">
-                            <button class="ribbon-icon-button active">
+                            <button class="ribbon-icon-button">
                                 <span class="icon">
                                     <span class="mif-not"></span>
                                 </span>
@@ -359,7 +353,7 @@
                                 <span class="caption">Box</span>
                             </button>
 
-                            <button class="ribbon-icon-button">
+                            <button class="ribbon-icon-button active">
                                 <span class="icon">
                                     <span>+</span>
                                 </span>
@@ -521,7 +515,7 @@
     <div id="container">
         <div><canvas id="colorbarCanvas"></canvas></div>
     </div>
-    <canvas id="threeCanvas" class="shifted-content" tabindex="1" style="width: 100%; height: 100%;"></canvas>
+    <canvas id="threeCanvas" tabindex="1" style="width: 100%; height: 100%;"></canvas>
 
     <!-- Metro 4 -->
     <script src="https://cdn.metroui.org.ua/v4/js/metro.min.js"></script>

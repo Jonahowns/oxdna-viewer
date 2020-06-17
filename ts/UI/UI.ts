@@ -333,7 +333,6 @@ class View {
                 return;
             }
         }
-
     }
 
     private getToggleGroupValue(id: string): string {
@@ -350,6 +349,26 @@ class View {
 
     public getInputBool(id: string): boolean {
         return (<HTMLInputElement>document.getElementById(id)).checked;
+    }
+
+    public toggleWindow(id: string, oncreate?: ()=>void) {
+        let elem = this.doc.getElementById(id);
+        if (elem) {
+            Metro.window.toggle(elem);
+        } else {
+            this.createWindow(id, oncreate);
+        }
+    }
+
+    public createWindow(id: string, oncreate?: ()=>void) {
+        fetch(`windows/${id}.json`)
+            .then(response => response.json())
+            .then(data => {
+                let w = Metro.window.create(data);
+                w[0].id = id;
+                w.load(`windows/${id}.html`).then(oncreate);
+            }
+        );
     }
 
     public toggleModal(id: string) {

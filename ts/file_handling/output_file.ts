@@ -255,6 +255,7 @@ function writeMutTrapText(base1: number, base2: number): string { //create strin
 
 function makeMutualTrapFile() { //make download of mutual trap file from selected bases
     let mutTrapText: string = "";
+    let listBases = Array.from(selectedBases).map(e=>e.gid);
     for (let x = 0; x < listBases.length; x = x + 2) { //for every selected nucleotide in listBases string
         if (listBases[x+1] !== undefined) { //if there is another nucleotide in the pair
             mutTrapText = mutTrapText + writeMutTrapText(listBases[x], listBases[x + 1]) + writeMutTrapText(listBases[x + 1], listBases[x]); //create mutual trap data for the 2 nucleotides in a pair - selected simultaneously
@@ -294,8 +295,8 @@ function makePairTrapFile() {
     }
 }
 
-function makeSelectedBasesFile() { //make selected base file by addign listBases to text area
-    makeTextFile("baseListFile", listBases.join(" "));
+function makeSelectedBasesFile() { //make selected base file
+    makeTextFile("baseListFile", Array.from(selectedBases).map(e=>e.gid).join(" "));
 }
 
 function makeSequenceFile() {

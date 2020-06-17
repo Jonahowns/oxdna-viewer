@@ -1,6 +1,4 @@
 /// <reference path="../typescript_definitions/index.d.ts" />
-let listBases = []; //list of bases to download in .txt file
-let basesInfo = ""; //list of bases' info - location, strand and system ids, etc. - to download in .txt file
 let mouse3D;
 let raycaster = new THREE.Raycaster();
 ;
@@ -21,7 +19,6 @@ canvas.addEventListener('mousedown', event => {
         let id = gpuPicker(event);
         //if something was clicked, toggle the coloration of the appropriate things.
         if (id > -1 && !transformControls.isHovered()) {
-            console.log(`Clicked on ${id}`);
             // This runs after the selection is done and the nucleotides are toggled,
             // but it needs to be defined as a callback since the cluster selection
             // can take a while to finish.
@@ -129,7 +126,7 @@ function updateView(sys) {
         });
     }
     render(); //update scene;
-    listBases = [];
+    let listBases = [];
     let baseInfoStrands = {};
     //sort selection info into respective containers
     selectedBases.forEach((base) => {
@@ -142,24 +139,31 @@ function updateView(sys) {
         else
             baseInfoStrands[strandID] = [base];
     });
-    //Display every selected nucleotide id (top txt box)
+    // Display every selected nucleotide id (top txt box)
     makeTextArea(listBases.join(","), "baseList");
-    //Brake down info (low txt box)
-    let baseInfoLines = [];
+    try {
+        document.getElementById('baseInfo').innerText = '';
+    }
+    catch (error) {
+        // No baseinfo window created yet
+        return;
+    }
+    // Sadly. this seems to be doable only with jquery
+    // https://stackoverflow.com/questions/25286488/with-vanilla-javascript-how-can-i-access-data-stored-by-jquerys-data-method
+    let table = $('#baseInfo').data()['listview'];
     for (let strandID in baseInfoStrands) {
         let sBases = baseInfoStrands[strandID];
-        //make a fancy header for each strand
-        let header = ["Str#:", strandID, "Sys#:", sBases[0].getSystem().systemID];
-        baseInfoLines.push("----------------------");
-        baseInfoLines.push(header.join(" "));
-        baseInfoLines.push("----------------------");
-        //fish out all the required base info
-        //one could also sort it if neaded ...
+        let strand = table.addGroup({
+            caption: `Strand ${strandID} (System ${sBases[0].getSystem().systemID})`
+        });
         for (let i = 0; i < sBases.length; i++) {
-            baseInfoLines.push([sBases[i].type, "|", "gid:", sBases[i].gid, "|", "lID:", sBases[i].lid].join(" "));
+            let color = sBases[i].elemToColor(sBases[i].type).getHexString();
+            table.add(strand, {
+                caption: `gid: ${sBases[i].gid} | lID:  ${sBases[i].lid}`,
+                icon: `<span style="background:#${color}4f">${sBases[i].type}</span>`
+            });
         }
     }
-    makeTextArea(baseInfoLines.join("\n"), "BaseInfo"); //insert basesInfo into "BaseInfo" text area
 }
 ;
 function clearSelection() {

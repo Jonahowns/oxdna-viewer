@@ -30,20 +30,20 @@ class InstanceCopy {
 }
 let copied = [];
 function copyWrapper() {
-    if (listBases.length == 0) {
+    if (selectedBases.size == 0) {
         notify("Please select monomers to copy");
         return;
     }
-    let toCopy = listBases; // Save so that we can clear the selection
+    let toCopy = Array.from(selectedBases).map(e => e.gid); // Save so that we can clear the selection
     clearSelection();
     copied = toCopy.map(i => new InstanceCopy(elements.get(i)));
 }
 function cutWrapper() {
-    if (listBases.length == 0) {
+    if (selectedBases.size == 0) {
         notify("Please select monomers to copy");
         return;
     }
-    let elems = listBases.map(i => elements.get(i)); // Save so that we can clear the selection
+    let elems = Array.from(selectedBases); // Save so that we can clear the selection
     clearSelection();
     copied = elems.map(e => new InstanceCopy(e));
     editHistory.do(new RevertableDeletion(elems));
@@ -68,7 +68,7 @@ function pasteWrapper(keepPos) {
     topologyEdited = true;
 }
 function nickWrapper() {
-    let e = elements.get(listBases.slice(-1)[0]);
+    let e = Array.from(selectedBases).pop();
     if (e == undefined) {
         notify("Please select a monomer to nick at");
         return;
@@ -77,8 +77,7 @@ function nickWrapper() {
     topologyEdited = true;
 }
 function ligateWrapper() {
-    let ids = listBases.slice(-2);
-    let e = [elements.get(ids[0]), elements.get(ids[1])];
+    let e = Array.from(selectedBases).slice(-2);
     if (e[0] == undefined || e[1] == undefined) {
         notify("Please select two monomers to ligate");
         return;
@@ -87,7 +86,7 @@ function ligateWrapper() {
     topologyEdited = true;
 }
 function extendWrapper(double) {
-    let e = elements.get(listBases.slice(-1)[0]);
+    let e = Array.from(selectedBases).pop();
     let seq = view.getInputValue("sequence").toUpperCase();
     let extendDuplex = view.getInputBool("setCompl");
     if (e == undefined) {
@@ -124,7 +123,7 @@ function createWrapper() {
     topologyEdited = true;
 }
 function deleteWrapper() {
-    let e = listBases.map(i => elements.get(i));
+    let e = Array.from(selectedBases);
     clearSelection();
     if (e == []) {
         notify("Please select monomers to delete");
@@ -134,7 +133,8 @@ function deleteWrapper() {
     topologyEdited = true;
 }
 function skipWrapper() {
-    let e = listBases.map(i => elements.get(i));
+    let e = Array.from(selectedBases);
+    ;
     clearSelection();
     if (e == []) {
         notify("Please select monomers to skip");
@@ -149,7 +149,7 @@ function insertWrapper() {
         notify("Please type a sequence into the box");
         return;
     }
-    let e = elements.get(listBases.slice(-1)[0]);
+    let e = Array.from(selectedBases).pop();
     if (e == undefined) {
         notify("Please select a monomer insert after");
         return;
@@ -164,7 +164,7 @@ function setSeqWrapper() {
         notify("Please type a sequence into the box");
         return;
     }
-    let e = listBases.map(i => elements.get(i));
+    let e = Array.from(selectedBases);
     let n = [];
     e.forEach(elem => {
         if (elem instanceof Nucleotide) {

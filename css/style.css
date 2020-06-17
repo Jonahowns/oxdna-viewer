@@ -40,3 +40,7 @@ canvas {
 .tight {
     padding-bottom: 0 !important;
 }
+
+.window {
+    z-index: 999;
+}

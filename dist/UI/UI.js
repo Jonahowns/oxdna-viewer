@@ -305,6 +305,24 @@ class View {
     getInputBool(id) {
         return document.getElementById(id).checked;
     }
+    toggleWindow(id, oncreate) {
+        let elem = this.doc.getElementById(id);
+        if (elem) {
+            Metro.window.toggle(elem);
+        }
+        else {
+            this.createWindow(id, oncreate);
+        }
+    }
+    createWindow(id, oncreate) {
+        fetch(`windows/${id}.json`)
+            .then(response => response.json())
+            .then(data => {
+            let w = Metro.window.create(data);
+            w[0].id = id;
+            w.load(`windows/${id}.html`).then(oncreate);
+        });
+    }
     toggleModal(id) {
         ;
     }

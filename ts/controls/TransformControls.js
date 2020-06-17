@@ -271,8 +271,6 @@ THREE.TransformControls = function ( camera, domElement ) {
 
 		if ( !this.visible || this.dragging === true || ( pointer.button !== undefined && pointer.button !== 0 ) ) return;
 
-		console.log('Pointer down')
-
 		// Calculate current rotation from quaternion
 		rotation = new THREE.Euler().setFromQuaternion(currentQuaternion, 'XYZ').toVector3();
 

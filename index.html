@@ -35,6 +35,23 @@
         </ul>
     </aside>
 
+    <div id='socketConnectionsDialog' class="dialog" data-role="dialog">
+        <p>The viewer supports live relaxation using ox-serve nodes.</p>
+        <p>List of available servers:</p>
+        <div id="serverList" class="items-list"></div>
+        <div>
+            <div class="inline-form">
+                <input type="text" data-role="input" id="newHostText"
+                    data-prepend="Add host:"
+                    value="ws://some_host" title="ox-serve url address">
+                <button class="button primary" onclick="addOXServeURL()" title="Add ox-serve url address.">+</button>
+            </div>
+        </div>
+        <div class="dialog-actions">
+            <button class="button js-dialog-close">Close</button>
+        </div>
+    </div>
+
     <div id='openFileDialog' class="dialog" data-role="dialog">
         <input id='fileInput' type="file" multiple="multiple" data-role="file" data-mode="drop">    
         <div class="dialog-actions">
@@ -503,7 +520,7 @@
                         <span class="mif-cast mif-3x"></span>
                         <span class="caption">Connect</span>
                     </button>
-                    <button class="ribbon-button" id="btnControlSim" onclick="toggleOptions('relaxConfigWindow')">
+                    <button class="ribbon-button" id="btnControlSim" onclick="view.toggleWindow('oxserveWindow')">
                         <span class="mif-cogs mif-3x"></span>
                         <span class="caption">Settings</span>
                     </button>

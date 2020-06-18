@@ -1,107 +1,62 @@
 // Use Metro GUI
 declare var Metro: any;
 
-/**
- * Create a level in the System Hierarchy; Either system, strand or monomer.
- * @param parent Parent HTML container
- * @param label Text to display for this item
- * @param onClick Function to call if text is clicked
- * @param onEdit Function to call if edit button is clicked
- * @param onVisibilityToggle Function to call if the visibility button is clicked
- * @param expanded If true, automatically show child elements
- * @param isBottom If true, don't add any child elements
- * @returns Returns the child container, unless isBottom is true
- */
-function drawHierarchyLevel(
-        parent: HTMLElement,
-        label: string,
-        onClick: (event: MouseEvent)=>void,
-        onEdit: ()=>void,
-        onVisibilityToggle: (visible: boolean)=>void,
-        expanded?: boolean,
-        isBottom?: boolean
-    ): HTMLElement
-{
-    // Create level div
-    const level = document.createElement('div');
-    level.style.paddingLeft ="10px";
-    const levelLabel = document.createElement('i');
-    levelLabel.innerHTML = label;
-    levelLabel.onclick = onClick;
-    levelLabel.style.cursor = 'pointer';
-
-    // Create edit label icon
-    const editIcon = document.createElement('span');
-    editIcon.classList.add('mif-pencil', 'fg-black');
-    editIcon.onclick = onEdit;
-
-    // Create visibility toggle icon
-    const toggleVisIcon = document.createElement('i');
-    toggleVisIcon.classList.add('mif-pencil');
-    toggleVisIcon.innerHTML = 'eye';
-    toggleVisIcon.onclick = ()=>{
-        let visible = toggleVisIcon.classList.contains('fg-black');
-        if (visible) {
-            toggleVisIcon.classList.replace('fg-black', 'fg-gray');
-        } else {
-            toggleVisIcon.classList.replace('fg-black', 'fg-gray');
-        }
-        onVisibilityToggle(visible);
-    };
-
-    if (isBottom) {
-        level.appendChild(levelLabel);
-        parent.appendChild(level);
-        level.appendChild(editIcon);
-        level.appendChild(toggleVisIcon);
-        return;
-    } else {
-        // Create container and buttons for child elements
-        const expandButton = document.createElement('div');
-        expandButton.classList.add('mif-chevron-right');
-        const childContainer = document.createElement('div');
-        childContainer.hidden = !expanded;
-
-        expandButton.onclick = (event: MouseEvent)=> {
-            if(childContainer.hidden) {
-                expandButton.classList.replace('mif-chevron-right', 'arrow_drop_down');
-            } else {
-                expandButton.classList.replace('arrow_drop_down', 'mif-chevron-right');
-            }
-            childContainer.hidden = !childContainer.hidden;
-        };
-
-        level.appendChild(expandButton);
-        level.appendChild(levelLabel);
-        level.appendChild(editIcon);
-        level.appendChild(toggleVisIcon);
-        level.appendChild(childContainer);
-        parent.appendChild(level);
-        return childContainer;
-    }
-}
-
 function drawSystemHierarchy() {
-    let checboxhtml = (label)=> `<input data-role="checkbox" data-caption="${label}">`;
+    let checkboxhtml = (label)=> `<input data-role="checkbox" data-caption="${label}">`;
     const content: HTMLElement = document.getElementById("hierarchyContent");
     content.innerText = '';
 
-    let tv = Metro.makePlugin("#hierarchyContent", "treeview", {});
+    let tv = Metro.makePlugin("#hierarchyContent", "treeview", {
+        onCheckClick: (state, check, node, tree) => {
+            let n = $(node);
+            let element: BasicElement = n.data('monomer');
+            if (element) {
+                if (check.checked) {element.select()}
+                else {element.deselect()}
+                updateView(element.getSystem());
+                return;
+            }
+            let strand: Strand = n.data('strand');
+            if (strand) {
+                if (check.checked) {strand.select()}
+                else {strand.deselect()}
+                updateView(strand.system);
+                return;
+            }
+            let system = n.data('system');
+            if (system) {
+                if (check.checked) {system.select()}
+                else {system.deselect()}
+                updateView(system);
+                return;
+            }
+        }
+    });
     let treeview = tv.data('treeview');
 
+    // Add checkbox nodes for, systems, strands and monomers
     systems.forEach(system=>{
         let systemNode = treeview.addTo(null, {
-            html: checboxhtml(system.label ? system.label : `System ${system.systemID}`)
+            html: checkboxhtml(system.label ? system.label : `System ${system.systemID}`)
         })
+        systemNode.data('system', system);
         system.strands.forEach(strand=>{
             let strandNode = treeview.addTo(systemNode, {
-                html: checboxhtml(strand.label ? strand.label : `Strand ${strand.strandID}`)
+                html: checkboxhtml(strand.label ? strand.label : `Strand ${strand.strandID}`)
             })
+            strandNode.data('strand', strand);
             strand.monomers.forEach(monomer => {
+                let color = monomer.elemToColor(monomer.type).getHexString();
                 let monomerNode = treeview.addTo(strandNode, {
-                    html: checboxhtml(`${monomer.gid}: ${monomer.type}`.concat(
-                        monomer.label ? ` (${monomer.label})` : "")),
+                    html: checkboxhtml(`gid: ${monomer.gid}`.concat(
+                        monomer.label ? ` (${monomer.label})` : "")) +
+                        `<span style="background:#${color}4f">${monomer.type}</span>`,
+                    cls: color
                 })
+                // Save reference to monomer in node:
+                monomerNode.data('monomer', monomer);
+
+                // Add listeners for if node is toggled
                 let checkbox = monomerNode.find("input")[0];
                 monomer['addEventListener']('selected', ()=>{
                     checkbox.checked = true;
@@ -110,7 +65,7 @@ function drawSystemHierarchy() {
                 monomer['addEventListener']('deselected', ()=>{
                     checkbox.checked = false;
                     treeview._recheck(tv);
-                })
+                });
             });
         });
     });

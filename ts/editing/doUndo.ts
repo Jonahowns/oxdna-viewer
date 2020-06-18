@@ -21,9 +21,8 @@ class EditHistory {
 
         // Update the hierarchy, since we've made changes
         // if it is open, otherwise we don't care !
-        if(!document.getElementById('hierarchy').hidden)
-            //drawSystemHierarchy();
-        
+        if(view.isWindowOpen('systemHierarchyWindow'))
+            drawSystemHierarchy();
 
         //Return focus to the canvas so undo can be called immediatley
         canvas.focus()
@@ -37,7 +36,7 @@ class EditHistory {
         this.undoStack.push(edit);
 
         // Update the hierarchy, since we've made changes
-        if(!document.getElementById('hierarchy').hidden)
+        if(view.isWindowOpen('systemHierarchyWindow'))
             drawSystemHierarchy();
     }
 
@@ -52,7 +51,7 @@ class EditHistory {
         this.redoStack.push(edit);
 
         // Update the hierarchy, since we've made changes
-        if(!document.getElementById('hierarchy').hidden)
+        if(view.isWindowOpen('systemHierarchyWindow'))
             drawSystemHierarchy();
     }
 
@@ -67,7 +66,7 @@ class EditHistory {
         this.undoStack.push(edit);
 
         // Update the hierarchy, since we've made changes
-        if(!document.getElementById('hierarchy').hidden)
+        if(view.isWindowOpen('systemHierarchyWindow'))
             drawSystemHierarchy();
     }
 }

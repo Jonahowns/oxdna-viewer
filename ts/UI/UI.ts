@@ -31,18 +31,21 @@ function drawHierarchyLevel(
     levelLabel.style.cursor = 'pointer';
 
     // Create edit label icon
-    const editIcon = document.createElement('i');
-    editIcon.classList.add('material-icons');
-    editIcon.innerHTML = 'edit';
+    const editIcon = document.createElement('span');
+    editIcon.classList.add('mif-pencil', 'fg-black');
     editIcon.onclick = onEdit;
 
     // Create visibility toggle icon
     const toggleVisIcon = document.createElement('i');
-    toggleVisIcon.classList.add('material-icons');
-    toggleVisIcon.innerHTML = 'visibility';
+    toggleVisIcon.classList.add('mif-pencil');
+    toggleVisIcon.innerHTML = 'eye';
     toggleVisIcon.onclick = ()=>{
-        let visible = toggleVisIcon.innerHTML == 'visibility';
-        toggleVisIcon.innerHTML = visible ? 'visibility_off' : 'visibility';
+        let visible = toggleVisIcon.classList.contains('fg-black');
+        if (visible) {
+            toggleVisIcon.classList.replace('fg-black', 'fg-gray');
+        } else {
+            toggleVisIcon.classList.replace('fg-black', 'fg-gray');
+        }
         onVisibilityToggle(visible);
     };
 
@@ -54,17 +57,16 @@ function drawHierarchyLevel(
         return;
     } else {
         // Create container and buttons for child elements
-        const expandButton = document.createElement('i');
-        expandButton.classList.add('material-icons');
-        expandButton.innerHTML = "arrow_right";
+        const expandButton = document.createElement('div');
+        expandButton.classList.add('mif-chevron-right');
         const childContainer = document.createElement('div');
         childContainer.hidden = !expanded;
 
         expandButton.onclick = (event: MouseEvent)=> {
             if(childContainer.hidden) {
-                expandButton.innerHTML = 'arrow_drop_down';
+                expandButton.classList.replace('mif-chevron-right', 'arrow_drop_down');
             } else {
-                expandButton.innerHTML = 'arrow_right';
+                expandButton.classList.replace('arrow_drop_down', 'mif-chevron-right');
             }
             childContainer.hidden = !childContainer.hidden;
         };
@@ -79,45 +81,39 @@ function drawHierarchyLevel(
     }
 }
 
-/**
- * Draw the system hierarchy option content
- */
 function drawSystemHierarchy() {
-    const opt: HTMLElement = document.getElementById("hierarchyContent");
-    if (!opt.hidden) 
-    {
-        opt.innerHTML = ""; // Clear
-        // Add each system
-        systems.forEach(system=>{
-            let strands = drawHierarchyLevel(opt,
-                system.label ? system.label : `System: ${system.systemID}`,
-                (event)=>{system.toggleStrands(); updateView(system)},
-                ()=>{system.label=prompt("Please enter system label");drawSystemHierarchy()},
-                (visible)=>api.toggleElements(system.getMonomers()), true
-            );
-            // Add each strand in system
-            system.strands.forEach(strand=>{
-                let monomers = drawHierarchyLevel(
-                    strands,
-                    strand.label ? strand.label : `Strand: ${strand.strandID}`,
-                    (event)=>{strand.toggleMonomers(); updateView(system)},
-                    ()=>{strand.label=prompt("Please enter strand label");drawSystemHierarchy()},
-                    (visible)=>api.toggleStrand(strand)
-                );
-                // Add each monomer in strand
-                strand.monomers.forEach(monomer=>{
-                    drawHierarchyLevel(monomers,
-                        `${monomer.gid}: ${monomer.type}`.concat(
-                            monomer.label ? ` (${monomer.label})` : ""),
-                        (event)=>{monomer.toggle(); updateView(system)},
-                        ()=>{monomer.label=prompt("Please enter monomer label");drawSystemHierarchy()},
-                        ()=>api.toggleElements([monomer]),
-                        false, true
-                    );
+    let checboxhtml = (label)=> `<input data-role="checkbox" data-caption="${label}">`;
+    const content: HTMLElement = document.getElementById("hierarchyContent");
+    content.innerText = '';
+
+    let tv = Metro.makePlugin("#hierarchyContent", "treeview", {});
+    let treeview = tv.data('treeview');
+
+    systems.forEach(system=>{
+        let systemNode = treeview.addTo(null, {
+            html: checboxhtml(system.label ? system.label : `System ${system.systemID}`)
+        })
+        system.strands.forEach(strand=>{
+            let strandNode = treeview.addTo(systemNode, {
+                html: checboxhtml(strand.label ? strand.label : `Strand ${strand.strandID}`)
+            })
+            strand.monomers.forEach(monomer => {
+                let monomerNode = treeview.addTo(strandNode, {
+                    html: checboxhtml(`${monomer.gid}: ${monomer.type}`.concat(
+                        monomer.label ? ` (${monomer.label})` : "")),
+                })
+                let checkbox = monomerNode.find("input")[0];
+                monomer['addEventListener']('selected', ()=>{
+                    checkbox.checked = true;
+                    treeview._recheck(tv);
                 });
+                monomer['addEventListener']('deselected', ()=>{
+                    checkbox.checked = false;
+                    treeview._recheck(tv);
+                })
             });
         });
-    }
+    });
 }
 
 function handleMenuAction(event: String) {
@@ -323,6 +319,18 @@ class View {
 
     public getInputBool(id: string): boolean {
         return (<HTMLInputElement>document.getElementById(id)).checked;
+    }
+
+    public isWindowOpen(id: string): boolean {
+        let elem = this.doc.getElementById(id);
+        if (elem) {
+            // Should work but doesn't
+            //return Metro.window.isOpen(elem);
+            return elem.parentElement.parentElement.style.display != "none";
+        } else {
+            return false;
+        }
+        
     }
 
     public toggleWindow(id: string, oncreate?: ()=>void) {

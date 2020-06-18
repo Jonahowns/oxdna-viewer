@@ -15,10 +15,10 @@ class EditHistory {
         this.redoStack = new Stack();
         // Update the hierarchy, since we've made changes
         // if it is open, otherwise we don't care !
-        if (!document.getElementById('hierarchy').hidden)
-            //drawSystemHierarchy();
-            //Return focus to the canvas so undo can be called immediatley
-            canvas.focus();
+        if (view.isWindowOpen('systemHierarchyWindow'))
+            drawSystemHierarchy();
+        //Return focus to the canvas so undo can be called immediatley
+        canvas.focus();
     }
     /**
      * Add revertable edit to the undo history stack without performing it.
@@ -27,7 +27,7 @@ class EditHistory {
     add(edit) {
         this.undoStack.push(edit);
         // Update the hierarchy, since we've made changes
-        if (!document.getElementById('hierarchy').hidden)
+        if (view.isWindowOpen('systemHierarchyWindow'))
             drawSystemHierarchy();
     }
     undo() {
@@ -41,7 +41,7 @@ class EditHistory {
         edit.undo();
         this.redoStack.push(edit);
         // Update the hierarchy, since we've made changes
-        if (!document.getElementById('hierarchy').hidden)
+        if (view.isWindowOpen('systemHierarchyWindow'))
             drawSystemHierarchy();
     }
     redo() {
@@ -55,7 +55,7 @@ class EditHistory {
         edit.do();
         this.undoStack.push(edit);
         // Update the hierarchy, since we've made changes
-        if (!document.getElementById('hierarchy').hidden)
+        if (view.isWindowOpen('systemHierarchyWindow'))
             drawSystemHierarchy();
     }
 }

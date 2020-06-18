@@ -18,13 +18,25 @@ class BasicElement {
     toggle() {
         if (selectedBases.has(this)) {
             selectedBases.delete(this);
+            this['dispatchEvent']({ type: 'deselected' });
         }
         else {
             selectedBases.add(this);
+            this['dispatchEvent']({ type: 'selected' });
         }
         this.updateColor();
     }
     ;
+    select() {
+        selectedBases.add(this);
+        this['dispatchEvent']({ type: 'selected' });
+        this.updateColor();
+    }
+    deselect() {
+        selectedBases.delete(this);
+        this['dispatchEvent']({ type: 'deselected' });
+        this.updateColor();
+    }
     updateSP(num) {
         return new THREE.Object3D();
     }
@@ -131,3 +143,4 @@ class BasicElement {
     }
 }
 ;
+Object.assign(BasicElement.prototype, THREE.EventDispatcher.prototype);

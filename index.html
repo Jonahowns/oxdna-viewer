@@ -282,41 +282,41 @@
 
                 <div class="tight group">
                     <button class="ribbon-button" onclick="nickWrapper()" title="break the upstream connection of the last selected particle">
-                        <span class="mif-cut mif-2x"></span>
+                        <img src="img/ico/nick.svg">
                         <span class="caption">Nick</span>
                     </button>
                     <button class="ribbon-button" onclick="deleteWrapper()" title="delete the selected monomers">
-                        <span class="mif-copy mif-2x"></span>
+                        <img src="img/ico/delete.svg">
                         <span class="caption">Delete</span>
                     </button>
                     <button class="ribbon-button" onclick="ligateWrapper()" title="ligate the last two selected particles together">
-                        <span class="mif-paste mif-2x"></span>
+                        <img src="img/ico/ligate.svg">
                         <span class="caption">Ligate</span>
                     </button>
                 </div>
 
-                <div class="tight group flex-column" style="width: 470px">
+                <div class="tight group flex-column">
                     <div>
                         <input type="checkbox" id="setCompl" data-role="checkbox" data-caption="Duplex mode" title="Set also complementary bases">
                         <button class="ribbon-icon-button" onclick="setSeqWrapper()" title="Apply the given sequence to the selected monomers">
-                            <span class="mif-pencil mif-1x"></span>
-                            <span class="caption">Set</span>
+                            <img src="img/ico/set.svg">
+                            <span class="caption"> Set</span>
                         </button>
                         <button class="ribbon-icon-button" onclick="extendWrapper(false)" title="Extend strand (or duplex) from the selected monomer with the given sequence">
-                            <span class="mif-plus mif-1x"></span>
-                            <span class="caption">Extend</span>
+                            <img src="img/ico/extend.svg">
+                            <span class="caption"> Extend</span>
                         </button>
                         <button class="ribbon-icon-button" onclick="createWrapper()" title="Create a new strand (or duplex) with the provided sequences">
-                            <span class="mif-cut mif-1x"></span>
-                            <span class="caption">Create</span>
+                            <img src="img/ico/create.svg">
+                            <span class="caption"> Create</span>
                         </button>
                         <button class="ribbon-icon-button" onclick="insertWrapper()" title="Insert elements of the provided sequences upstream of the last selected particle">
-                            <span class="mif-cut mif-1x"></span>
-                            <span class="caption">Insert</span>
+                            <img src="img/ico/insert.svg">
+                            <span class="caption"> Insert</span>
                         </button>
                         <button class="ribbon-icon-button" onclick="skipWrapper()" title="Remove selected elements and connect neigbours">
-                            <span class="mif-cut mif-1x"></span>
-                            <span class="caption">Skip</span>
+                            <img src="img/ico/skip.svg">
+                            <span class="caption"> Skip</span>
                         </button>
                     </div>
                     <input type="text" data-role="input" id="sequence" class="mb-1"

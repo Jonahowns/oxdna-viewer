@@ -1,6 +1,6 @@
 {
     "resizable": true,
-    "place": "top-center",
+    "place": "top-right",
     "width": 300,
     "title": "System Hierarchy"
 }

@@ -153,6 +153,18 @@ function updateView(sys: System) {
 
 	// Display every selected nucleotide id (top txt box)
 	makeTextArea(listBases.join(","), "baseList");
+
+	// Update hierarchy checkboxes to match selected elements
+	if (view.isWindowOpen('systemHierarchyWindow')) {
+		let recheck = ()=> {
+			let hierarchy = $('#hierarchyContent');
+			hierarchy.data('checkboxMap').forEach((checkbox, gid)=>{
+				checkbox.checked = selectedBases.has(elements.get(gid));
+			})
+			hierarchy.data('treeview')._recheck(hierarchy);
+		};
+		recheck();
+	}
 	
 	try {
 		document.getElementById('baseInfo').innerText = '';	

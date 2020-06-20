@@ -1,8 +1,10 @@
 function drawSystemHierarchy() {
     let checkboxhtml = (label) => `<input data-role="checkbox" data-caption="${label}">`;
+    const includeMonomers = document.getElementById("hierarchyMonomers").checked;
+    var frag = document.createDocumentFragment();
     const content = document.getElementById("hierarchyContent");
     content.innerText = '';
-    let tv = Metro.makePlugin("#hierarchyContent", "treeview", {
+    let hierarchy = Metro.makePlugin(content, "treeview", {
         onCheckClick: (state, check, node, tree) => {
             let n = $(node);
             let element = n.data('monomer');
@@ -38,42 +40,65 @@ function drawSystemHierarchy() {
                 updateView(system);
                 return;
             }
-        }
+        },
+        showChildCount: true
     });
-    let treeview = tv.data('treeview');
+    let treeview = hierarchy.data('treeview');
+    let checkboxMap = new Map();
     // Add checkbox nodes for, systems, strands and monomers
-    systems.forEach(system => {
+    for (const system of systems) {
         let systemNode = treeview.addTo(null, {
             html: checkboxhtml(system.label ? system.label : `System ${system.systemID}`)
         });
         systemNode.data('system', system);
-        system.strands.forEach(strand => {
+        for (const strand of system.strands) {
             let strandNode = treeview.addTo(systemNode, {
-                html: checkboxhtml(strand.label ? strand.label : `Strand ${strand.strandID}`)
+                html: checkboxhtml(strand.label ? strand.label : `Strand ${strand.strandID} (${strand.monomers.length})`)
             });
             strandNode.data('strand', strand);
-            strand.monomers.forEach(monomer => {
-                let color = monomer.elemToColor(monomer.type).getHexString();
-                let monomerNode = treeview.addTo(strandNode, {
-                    html: checkboxhtml(`gid: ${monomer.gid}`.concat(monomer.label ? ` (${monomer.label})` : "")) +
-                        `<span style="background:#${color}4f">${monomer.type}</span>`,
-                    cls: color
-                });
-                // Save reference to monomer in node:
-                monomerNode.data('monomer', monomer);
-                // Add listeners for if node is toggled
-                let checkbox = monomerNode.find("input")[0];
-                monomer['addEventListener']('selected', () => {
-                    checkbox.checked = true;
-                    treeview._recheck(tv);
-                });
-                monomer['addEventListener']('deselected', () => {
-                    checkbox.checked = false;
-                    treeview._recheck(tv);
-                });
-            });
-        });
+            if (includeMonomers) {
+                let addMonomer = (monomer) => {
+                    let color = monomer.elemToColor(monomer.type).getHexString();
+                    let monomerNode = treeview.addTo(strandNode, {
+                        html: checkboxhtml(`gid: ${monomer.gid}`.concat(monomer.label ? ` (${monomer.label})` : "")) +
+                            `<span style="background:#${color}4f; padding: 5px">${monomer.type}</span>`
+                    });
+                    // Save reference for checbox in map:
+                    let checkbox = monomerNode.find("input")[0];
+                    checkbox.checked = selectedBases.has(monomer);
+                    checkboxMap.set(monomer.gid, checkbox);
+                };
+                for (const [i, monomer] of strand.monomers.entries()) {
+                    if (i < 20) {
+                        addMonomer(monomer);
+                    }
+                    else {
+                        let moreNode = treeview.addTo(strandNode, {
+                            caption: `View remaining ${strand.monomers.length - i} monomers`,
+                            icon: '<span class="mif-plus"></span>'
+                        });
+                        moreNode[0].onclick = () => {
+                            treeview.del(moreNode);
+                            for (let j = i; j < strand.monomers.length; j++) {
+                                addMonomer(strand.monomers[j]);
+                            }
+                        };
+                        break;
+                    }
+                }
+            }
+        }
+    }
+    //});});});
+    treeview._recheck(hierarchy);
+    hierarchy.data('checkboxMap', checkboxMap);
+    /*
+    // Add listeners for if an element is toggled
+    document.addEventListener('elementSelectionEvent', event=>{
+        checkboxMap.get(event['element'].gid).checked = event['selected'];
+        //treeview._recheck(tv);
     });
+    */
 }
 function handleMenuAction(event) {
     switch (event) {

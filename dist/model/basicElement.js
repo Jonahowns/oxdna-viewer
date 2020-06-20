@@ -15,26 +15,22 @@ class BasicElement {
     ;
     //abstract rotate(quat: THREE.Quaternion): void;
     // highlight/remove highlight the bases we've clicked from the list and modify color
-    toggle() {
+    toggle(supressEvent) {
         if (selectedBases.has(this)) {
             selectedBases.delete(this);
-            this['dispatchEvent']({ type: 'deselected' });
         }
         else {
             selectedBases.add(this);
-            this['dispatchEvent']({ type: 'selected' });
         }
         this.updateColor();
     }
     ;
     select() {
         selectedBases.add(this);
-        this['dispatchEvent']({ type: 'selected' });
         this.updateColor();
     }
     deselect() {
         selectedBases.delete(this);
-        this['dispatchEvent']({ type: 'deselected' });
         this.updateColor();
     }
     updateSP(num) {
@@ -143,4 +139,3 @@ class BasicElement {
     }
 }
 ;
-Object.assign(BasicElement.prototype, THREE.EventDispatcher.prototype);

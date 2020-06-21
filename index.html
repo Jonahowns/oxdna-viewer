@@ -18,7 +18,7 @@
         data-shift=".shifted-content">
         <div class="sidebar-header bg-grayMouse">
             <span class="title fg-white">oxView</span>
-            <span class="subtitle fg-white"> An oxdna viewer</span>
+            <span class="subtitle fg-white"> An oxDNA viewer and editor</span>
         </div>
         <ul class="sidebar-menu">
             <li><a href="https://github.com/sulcgroup/oxdna-viewer/"><span class="mif-github icon"></span>Github</a>
@@ -442,10 +442,21 @@
                         <span class="mif-palette mif-2x"></span>
                         <span class="caption">Edit color palette</span>
                     </button>
-                    <button class="ribbon-button">
-                        <span class="mif-pencil mif-2x"></span>
-                        <span class="caption">Custom coloring</span>
-                    </button>
+                    <div class="tight group flex-column">
+                        <input type="color" id="customColor" value="#ff0000" title="Custom color">
+                        <span>
+                            <button class="ribbon-icon-button" id="setCustomColor"
+                                onclick="colorElements()"
+                                title="Color selected elements">
+                                <span class="mif-pencil"></span>
+                            </button>
+                            <button class="ribbon-icon-button" id="resetCustomColor"
+                                onclick="resetCustomColoring()"
+                                title="Reset coloring on selected elements">
+                                <span class="mif-undo"></span>
+                            </button>
+                        </span>
+                    </div>
                     <span class="title">Colors</span>
                 </div>
                 <div class="group">

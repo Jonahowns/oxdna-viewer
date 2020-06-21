@@ -172,68 +172,57 @@ function initLutCols(systems: System[]) {
     }
 }
 
-function colorSelection() {
-    const opt: HTMLElement = document.getElementById("colorSelectionContent");
-    if(!opt.hidden) {
-        opt.innerHTML = ""; // clear content
-        const setButton = document.createElement('button');
-        const resetButton = document.createElement('button');
-        setButton.innerText = "Set Color";
-        resetButton.innerText = "Reset Colors";
+function resetCustomColoring() {
+    view.setColoringMode("Strand");
+    initLutCols(systems);
+    initLutCols(tmpSystems);
+    clearSelection();
+}
 
-        // create color map with selected color
-        setButton.onclick = () => {
-            const selectedColor = new THREE.Color(colorInput.value);
-
-            if (lut == undefined) {
-                lut = new THREE.Lut(defaultColormap, 512);
-                // legend needed to set 'color by' to Overlay, gets removed later
-                lut.setLegendOn();
-                lut.setLegendLabels();
-            }
-            else {
-                const emptyTmpSystems = tmpSystems.filter(tmpSys => tmpSys.lutCols.length == 0)
-                if (emptyTmpSystems.length > 0) {
-                    console.log(emptyTmpSystems)
-                    initLutCols(emptyTmpSystems)
-                }
-                view.setColoringMode("Overlay");
-            }
-
-            initLutCols(systems);
-            initLutCols(tmpSystems);
-
-            selectedBases.forEach(e => {
-                let sid;
-                if (e.dummySys) {
-                    sid = e["gid"] - e.dummySys.globalStartId;
-                    e.dummySys.lutCols[e.sid] = selectedColor;
-                }
-                sid = e["gid"] - e.getSystem().globalStartId;
-                e.getSystem().lutCols[sid] = selectedColor;
-            });
-            
-            view.setColoringMode("Overlay");
-            if (!systems.some(system => system.colormapFile)) {
-                api.removeColorbar();
-            }
-            clearSelection();
-        }
-
-        resetButton.onclick = () => {
-            view.setColoringMode("Strand");
-            initLutCols(systems);
-            initLutCols(tmpSystems);
-            clearSelection();
-        }
-        
-        let colorInput = document.createElement('input');
-        colorInput.type = 'color';
-        opt.appendChild(colorInput);
-        opt.appendChild(setButton);
-        opt.appendChild(resetButton);
+// create color map with selected color
+function colorElements(color?: THREE.Color, elems?: BasicElement[]) {
+    if (!color) {
+        let colorInput = (document.getElementById("customColor") as HTMLInputElement);
+        color = new THREE.Color(colorInput.value);
     }
-};
+    if (!elems) {
+        elems = Array.from(selectedBases);
+    }
+
+    if (lut == undefined) {
+        lut = new THREE.Lut(defaultColormap, 512);
+        // legend needed to set 'color by' to Overlay, gets removed later
+        lut.setLegendOn();
+        lut.setLegendLabels();
+    }
+    else {
+        const emptyTmpSystems = tmpSystems.filter(tmpSys => tmpSys.lutCols.length == 0)
+        if (emptyTmpSystems.length > 0) {
+            console.log(emptyTmpSystems)
+            initLutCols(emptyTmpSystems)
+        }
+        view.setColoringMode("Overlay");
+    }
+
+    initLutCols(systems);
+    initLutCols(tmpSystems);
+
+    elems.forEach(e => {
+        let sid;
+        if (e.dummySys) {
+            sid = e["gid"] - e.dummySys.globalStartId;
+            e.dummySys.lutCols[e.sid] = color;
+        }
+        sid = e["gid"] - e.getSystem().globalStartId;
+        e.getSystem().lutCols[sid] = color;
+    });
+
+    view.setColoringMode("Overlay");
+    if (!systems.some(system => system.colormapFile)) {
+        api.removeColorbar();
+    }
+    clearSelection();
+}
 
 function toggleVisArbitrary() {
     // arbitrary visibility toggling

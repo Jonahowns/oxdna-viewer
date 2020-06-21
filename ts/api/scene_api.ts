@@ -146,6 +146,22 @@ module api{
         selectElements(getElements(targets), keepPrevious);
     }
 
+    /**
+     * Show the specified element in the viewport
+     * @param element Element to center view at
+     */
+    export function findElement(element: BasicElement) {
+        let targetPos = element.getInstanceParameter3('bbOffsets');
+
+        // Target trackball controls at element position
+        controls.target = targetPos;
+
+        // Move in close to the element
+        let targetDist = 3;
+        let dist = (camera.position.distanceTo(targetPos));
+        camera.position.lerp(targetPos, 1-(targetDist/dist));
+    }
+
     export function selectElements(elems: BasicElement[], keepPrevious?: boolean) {
         if (!keepPrevious) {
             clearSelection();

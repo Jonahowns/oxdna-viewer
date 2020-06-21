@@ -13,7 +13,7 @@ function toggleClusterSim() {
         rigidClusterSimulator = new RigidClusterSimulator();
         if (rigidClusterSimulator.getNumberOfClusters() < 2) {
             notify("Please create at least 2 clusters");
-            document.getElementById("clusterOptions").hidden = false;
+            view.toggleWindow("clusteringWindow");
             document.getElementById("clusterSim")["checked"] = false;
             rigidClusterSimulator = null;
             return;

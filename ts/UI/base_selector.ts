@@ -305,7 +305,7 @@ canvas.addEventListener('mousemove', event => {
 
 
 canvas.addEventListener('mousedown', event => {
-	if (view.selectionEnabled() && view.getSelectionMode() === "Box") {
+	if (view.selectionEnabled() && view.getSelectionMode() === "Box" && !transformControls.isHovered()) {
 		// Box selection
 		event.preventDefault();
 

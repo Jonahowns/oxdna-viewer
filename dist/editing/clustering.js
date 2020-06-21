@@ -6,6 +6,7 @@ function clearClusters() {
     elements.forEach(element => {
         delete element.clusterId;
     });
+    view.setColoringMode("Strand"); // Then color by strand
 }
 /**
  * Calculate DBSCAN clusters using parameters from input
@@ -82,6 +83,7 @@ function selectionToCluster() {
         selectedBases.forEach(element => {
             element.clusterId = clusterCounter;
         });
+        view.setColoringMode("Cluster"); // Then color by cluster
     }
     else {
         notify("First make a selection of elements you want to include in the cluster");

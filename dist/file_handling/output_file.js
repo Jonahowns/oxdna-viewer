@@ -2,18 +2,18 @@ function makeOutputFiles() {
     let name = view.getInputValue("outputFilename");
     let top = view.getInputBool("topDownload");
     let reorganized, counts;
-    if (top[0].checked == true) {
+    if (top) {
         let { a, b, file_name, file } = makeTopFile(name);
         reorganized = a;
         counts = b;
         makeTextFile(file_name, file);
     }
     else if (systems.length > 1 || topologyEdited) {
-        notify("You have edited the topology of the scene, a new topology file must be generated");
+        notify("You have edited the topology of the scene, a new topology file must be generated", "warning");
         return;
     }
     let dat = view.getInputBool("datDownload");
-    if (dat[0].checked == true) {
+    if (dat) {
         let { file_name, file } = makeDatFile(name, reorganized);
         makeTextFile(file_name, file);
     }
@@ -61,7 +61,7 @@ function make3dOutput() {
         }, options);
     }
     else {
-        notify(`Unknown file format: ${fileFormat}`);
+        notify(`Unknown file format: ${fileFormat}`, "alert");
     }
 }
 function makeTopFile(name) {

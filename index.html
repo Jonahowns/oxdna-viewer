@@ -132,7 +132,7 @@
                     <button onclick="makePairTrapFile()" class="ribbon-button"
                         title="Download a mutual trap file for all basepairs">
                         <span class="mif-file-download mif-2x"></span>
-                        <span class="caption">Mutual trap</span>
+                        <span class="caption">Pair trap</span>
                     </button>
                     <span class="title">oxDNA files</span>
                 </div>
@@ -459,18 +459,11 @@
                     </div>
                     <span class="title">Colors</span>
                 </div>
-                <div class="group">
-                    <button class="ribbon-button">
-                        <span class="mif-eye mif-3x"></span>
-                        <span class="caption">Toggle selection</span>
-                    </button>
-                    <button class="ribbon-button">
-                        <span class="mif-undo mif-3x"></span>
-                        <span class="caption">Reset</span>
-                    </button>
-                    <span class="title">Visibility</span>
-                </div>
                 <div class="tight group">
+                    <button class="ribbon-button" onclick="toggleVisArbitrary()">
+                        <span class="mif-eye mif-3x"></span>
+                        <span class="caption">Toggle visibility</span>
+                    </button>
                     <button class="ribbon-button" onclick="api.switchCamera()">
                         <span class="mif-video-camera mif-3x"></span>
                         <span id="cameraSwitch" class="caption">Orthographic</span>
@@ -479,36 +472,60 @@
                         <span class="mif-flow-cascade mif-3x"></span>
                         <span class="caption">System hierarchy</span>
                     </button>
+                    <button class="ribbon-button" onclick="view.toggleWindow('clusteringWindow')">
+                        <span class="mif-cloudy4 mif-3x"></span>
+                        <span class="caption">Clustering</span>
+                    </button>
                 </div>
             </div>
 
             <!--Trajectory-->
             <div class="section" id="section-trajectory">
                 <div class="tight group">
-                    <div>
-                        <button class="ribbon-icon-button" onclick="trajReader.previousConfig()"
+                    <div class="row flex-align-center">
+                        <button class="ribbon-button" onclick="trajReader.previousConfig()"
                             title="Previous config (left keyboard arrow)">
                             <span class="mif-previous mif-2x"></span>
                             <span class="caption">Previous</span>
                         </button>
-                        <p id="trajTimestep" hidden="true"></p>
-                        <button class="ribbon-icon-button" onclick="trajReader.nextConfig()"
+                        <div id="trajTimestep" hidden="true"></div>
+                        <button class="ribbon-button" onclick="trajReader.nextConfig()"
                             title="Next config (right keyboard arrow)">
                             <span class="mif-next mif-2x"></span>
                             <span class="caption">Next</span>
                         </button>
                     </div>
                 </div>
-
+                <div class="tight group flex-column">
+                    <div class="tight group">
+                        <button
+                            class="ribbon-icon-button" 
+                            onclick="trajReader.stepUntil(parseInt(document.getElementById('trajPrevLim').value), true)"
+                            title="Click to rewind">
+                                <span id="trajPrevUntilIco" class="mif-previous mif-2x"></span>
+                                <span class="caption">until t &le;</span>
+                        </button>
+                        <input type="text" style="width: 6em;" data-role="spinner" id="trajPrevLim" class="input-small" value="0" min="0" title="Input trajectory step at which to stop rewinding.">
+                    </div>
+                    <div class="tight group">
+                        <button
+                            class="ribbon-icon-button" 
+                            onclick="trajReader.stepUntil(parseInt(document.getElementById('trajNextLim').value), false)"
+                            title="Click to play">
+                                <span id="trajNextUntilIco" class="mif-next mif-2x"></span>
+                                <span class="caption">until t &ge;</span>
+                        </button>
+                        <input type="text" style="width: 6em;" data-role="spinner" id="trajNextLim" class="input-small" value="-1" min="0" title="Input trajectory step at which to stop playback. Input a negative number to play until the end.">
+                    </div>
+                </div>
             </div>
 
             <div class="section" id="section-dynamics">
                 <div class="group">
-                    <button class="ribbon-button" id="clusterSim" onchange="toggleClusterSim()">
-                        <span class="icon">
-                            <span class="mif-play"></span>
-                        </span>
-                    </button>
+                    <div class="tight group flex-column">
+                        <input type="checkbox" id="clusterSim" onchange="toggleClusterSim()" data-role="switch">
+                        <span>Enable</span>
+                    </div>
                     <div>
                         <button class="ribbon-button dropdown-toggle">
                             <span class="icon">
@@ -517,11 +534,11 @@
                             <span class="caption">Settings</span>
                         </button>
                         <ul class="ribbon-dropdown" data-role="dropdown" data-duration="100" style="width: 200px;">
-                            <p>Cluster repulsion constant</p><input id='rbd_clusterRepulsionConst' value = 1000 type="text" data-role="spinner" class="input-small" data-step="100">
-                            <p>Connection spring constant</p><input id='rbd_connectionSpringConst' value = 10 type="text" data-role="spinner" class="input-small" data-step="10">
-                            <p>Connection relaxed length</p><input id='rbd_connectionRelaxedLength' value = 3 type="text" data-role="spinner" class="input-small" data-step="1">
-                            <p>Friction</p><input id='rbd_friction' value = 0.25 type="text" data-role="spinner" class="input-small" data-step="0.1">
-                            <p>dt</p><input id='rbd_dt' value = 0.1 type="text" data-role="spinner" class="input-small" data-step="0.01">
+                        <p>Cluster repulsion constant</p><input id='rbd_clusterRepulsionConst' value = 1000 onchange="if(rigidClusterSimulator){rigidClusterSimulator.clusterRepulsionConst = this.value;}" type="text" data-role="spinner" class="input-small" data-step=1000>
+                            <p>Connection spring constant</p><input id='rbd_connectionSpringConst' value = 10 onchange="if(rigidClusterSimulator){rigidClusterSimulator.connectionSpringConst = this.value;}" type="text" data-role="spinner" class="input-small" data-step=10>
+                            <p>Connection relaxed length</p><input id='rbd_connectionRelaxedLength' value = 3 onchange="if(rigidClusterSimulator){rigidClusterSimulator.connectionRelaxedLength = this.value;}" type="text" data-role="spinner" class="input-small" data-step=1>
+                            <p>Friction</p><input id='rbd_friction' value = 0.25 onchange="if(rigidClusterSimulator){rigidClusterSimulator.friction = this.value;}" type="text" data-role="spinner" class="input-small" data-step=.1 data-fixed="1">
+                            <p>dt</p><input id='rbd_dt' value = 0.1 onchange="if(rigidClusterSimulator){rigidClusterSimulator.dt = this.value;}" type="text" data-role="spinner" class="input-small" data-step=.01 data-fixed="2">
                         </ul>
                     </div>
                     <span class="title">Rigid-body</span>

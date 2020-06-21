@@ -311,7 +311,7 @@ function readDat(datReader, system) {
     // parse file into lines
     let lines = datReader.result.split(/[\n]+/g);
     if (lines.length-3 < numNuc) { //Handles dat files that are too small.  can't handle too big here because you don't know if there's a trajectory
-        notify(".dat and .top files incompatible")
+        notify(".dat and .top files incompatible", "alert");
         return
     }
     // Increase the simulation box size if larger than current
@@ -324,7 +324,7 @@ function readDat(datReader, system) {
     confNum += 1
     console.log(confNum, "t =", time);
     let timedisp = document.getElementById("trajTimestep");
-    timedisp.innerHTML = `t = ${time}`;
+    timedisp.innerHTML = `t = ${time.toLocaleString()}`;
     timedisp.hidden = false;
     // discard the header
     lines = lines.slice(3);
@@ -401,7 +401,7 @@ function readJson(system, jsonReader) {
             }
         }
         else { //if json and dat files do not match, display error message and set filesLen to 2 (not necessary)
-            notify(".json and .top files are not compatible.");
+            notify(".json and .top files are not compatible.", "alert");
             return;
         }
     }
@@ -438,7 +438,7 @@ function readOxViewJsonFile(file: File) {
                         case 'Peptide': constr = Peptide; break;
                         default:
                             let error = `Unrecognised type of strand:  ${strandData.class}`;
-                            notify(error);
+                            notify(error, "alert");
                             throw error;
                     }
                     strand = new constr(strandData.id, sys);

@@ -66,6 +66,7 @@ function pasteWrapper(keepPos) {
     // Add to history
     editHistory.add(new RevertableAddition(copied, elems, pos));
     topologyEdited = true;
+    api.selectElements(elems);
 }
 function nickWrapper() {
     let e = Array.from(selectedBases).pop();

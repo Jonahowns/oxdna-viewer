@@ -131,7 +131,7 @@ class OXServeSocket extends WebSocket{
         let connect_button =  (document.getElementById("btnConnect") as HTMLSelectElement);
         connect_button.style.backgroundColor = "";
         connect_button.textContent = "Connect to oxServe";
-        notify("lost oxServe Connection");
+        notify("lost oxServe Connection", "warn");
     }
 
     

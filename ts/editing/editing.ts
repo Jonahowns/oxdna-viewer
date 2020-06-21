@@ -91,6 +91,8 @@ function pasteWrapper(keepPos?: Boolean) {
     // Add to history
     editHistory.add(new RevertableAddition(copied, elems, pos));
     topologyEdited = true;
+
+    api.selectElements(elems);
 }
 
 function nickWrapper() {

@@ -196,6 +196,9 @@ function colorElements(color, elems) {
     if (!elems) {
         elems = Array.from(selectedBases);
     }
+    if (elems.length == 0) {
+        notify("Please first select the elements you wish to color");
+    }
     if (lut == undefined) {
         lut = new THREE.Lut(defaultColormap, 512);
         // legend needed to set 'color by' to Overlay, gets removed later
@@ -248,9 +251,15 @@ function toggleVisArbitrary() {
     tmpSystems.forEach(tempSys => tempSys.callUpdates(['instanceVisibility']));
     clearSelection();
 }
-function notify(message, title, opt) {
+function notify(message, type, title) {
     let n = Metro.notify;
-    n.create(message, title, opt);
+    if (!type) {
+        type = "info";
+    }
+    n.create(message, title, {
+        cls: type,
+        timeout: 5000
+    });
     console.info(`Notification: ${message}`);
 }
 class View {
@@ -390,7 +399,7 @@ class View {
                 calc();
             }
             catch (error) {
-                notify(`Sorry, something went wrong with the calculation: ${error}`);
+                notify(`Sorry, something went wrong with the calculation: ${error}`, "alert");
             }
             // Change cursor back and remove modal
             dom['style'].cursor = "auto";

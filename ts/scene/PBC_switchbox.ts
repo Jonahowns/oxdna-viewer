@@ -106,7 +106,7 @@ function bringInBox(boxOption: string) {
             });
         });
     } else {
-        notify(`"${boxOption}" is not a valid inboxing option. Please use either "Monomer" or "Strand"`);
+        notify(`"${boxOption}" is not a valid inboxing option. Please use either "Monomer" or "Strand"`, "alert");
     }
 }
 

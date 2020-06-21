@@ -20,6 +20,7 @@ canvas {
     z-index: 2;
     width: 100%;
     opacity: 0.95;
+    background: white;
 }
 
 #baseList {

@@ -63,6 +63,7 @@ function drawSystemHierarchy() {
                         html: checkboxhtml(`gid: ${monomer.gid}`.concat(monomer.label ? ` (${monomer.label})` : "")) +
                             `<span style="background:#${color}4f; padding: 5px">${monomer.type}</span>`
                     });
+                    monomerNode.data('monomer', monomer);
                     // Save reference for checbox in map:
                     let checkbox = monomerNode.find("input")[0];
                     checkbox.checked = selectedBases.has(monomer);

@@ -199,12 +199,19 @@
                     </div>
                     <span class="title">Selection mode</span>
                 </div>
+                <div class="tight group flex-column">
+                    <span>Select<br>pairs</span>
+                    <input type="checkbox" id="selectPairs" data-role="switch" title="Automatically select basepairs">
+                </div>
                 <textarea id="baseList" cols="25" rows="3" readonly> Selected Bases List </textarea>
                 <div class="tight group flex-column">
-                    <input class="input-small" type="checkbox" id="selectPairs" data-role="checkbox" data-caption="Select pairs">
                     <button class="ribbon-icon-button" onclick="selectAll()">
                         <span class="mif-done_all mif-1x"></span>
                         <span class="caption">Select all</span>
+                    </button>
+                    <button class="ribbon-icon-button" onclick="invertSelection()">
+                        <span class="mif-contrast mif-1x"></span>
+                        <span class="caption">Invert selection</span>
                     </button>
                     <button class="ribbon-icon-button" onclick="clearSelection()">
                         <span class="mif-not mif-1x"></span>

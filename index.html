@@ -234,11 +234,15 @@
                     </div>
                     <span class="title">Selection mode</span>
                 </div>
+                <button class="ribbon-button" onclick="view.toggleWindow('clusteringWindow')">
+                    <span class="mif-cloudy4 mif-3x"></span>
+                    <span class="caption">Clustering</span>
+                </button>
+                <textarea id="baseList" cols="25" rows="3" readonly> Selected Bases List </textarea>
                 <div class="tight group flex-column">
                     <span>Select<br>pairs</span>
                     <input type="checkbox" id="selectPairs" data-role="switch" title="Automatically select basepairs">
                 </div>
-                <textarea id="baseList" cols="25" rows="3" readonly> Selected Bases List </textarea>
                 <div class="tight group flex-column">
                     <button class="ribbon-icon-button" onclick="selectAll()">
                         <span class="mif-done_all mif-1x"></span>
@@ -513,10 +517,6 @@
                     <button class="ribbon-button" onclick="view.toggleWindow('systemHierarchyWindow', drawSystemHierarchy)">
                         <span class="mif-flow-cascade mif-3x"></span>
                         <span class="caption">System hierarchy</span>
-                    </button>
-                    <button class="ribbon-button" onclick="view.toggleWindow('clusteringWindow')">
-                        <span class="mif-cloudy4 mif-3x"></span>
-                        <span class="caption">Clustering</span>
                     </button>
                     <button class="ribbon-button" onclick="Metro.dialog.open('#keybindingsDialog')"
                         title="Show the available keyboard shortcuts">

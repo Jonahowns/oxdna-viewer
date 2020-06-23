@@ -40,7 +40,7 @@ function getCenteringGoal(): THREE.Vector3 {
         centerOption = window.sessionStorage.centerOption;
     } 
     else{
-        centerOption = view.getInboxingSetting();
+        centerOption = view.getCenteringSetting();
     }
     //let centerOption = 
     switch (centerOption) {

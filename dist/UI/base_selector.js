@@ -152,22 +152,34 @@ function updateView(sys) {
         };
         recheck();
     }
-    try {
-        document.getElementById('baseInfo').innerText = '';
+    //Brake down info (low txt box)
+    let baseInfoLines = [];
+    for (let strandID in baseInfoStrands) {
+        let sBases = baseInfoStrands[strandID];
+        //make a fancy header for each strand
+        let header = ["Str#:", strandID, "Sys#:", sBases[0].getSystem().systemID];
+        baseInfoLines.push("----------------------");
+        baseInfoLines.push(header.join(" "));
+        baseInfoLines.push("----------------------");
+        //fish out all the required base info
+        //one could also sort it if neaded ...
+        for (let i = 0; i < sBases.length; i++) {
+            baseInfoLines.push([sBases[i].type, "|", "gid:", sBases[i].gid, "|", "lID:", sBases[i].lid].join(" "));
+        }
     }
-    catch (error) {
-        // No baseinfo window created yet
-        return;
-    }
+    makeTextArea(baseInfoLines.join("\n"), "BaseInfo"); //insert basesInfo into "BaseInfo" text area
+    /*
     // Sadly. this seems to be doable only with jquery
     // https://stackoverflow.com/questions/25286488/with-vanilla-javascript-how-can-i-access-data-stored-by-jquerys-data-method
     let table = $('#baseInfo').data()['listview'];
-    for (let strandID in baseInfoStrands) {
+
+    for (let strandID in baseInfoStrands){
         let sBases = baseInfoStrands[strandID];
         let strand = table.addGroup({
             caption: `Strand ${strandID} (System ${sBases[0].getSystem().systemID})`
         });
-        for (let i = 0; i < sBases.length; i++) {
+        
+        for(let i = 0; i < sBases.length; i++){
             let color = sBases[i].elemToColor(sBases[i].type).getHexString();
             table.add(strand, {
                 caption: `gid: ${sBases[i].gid} | lID:  ${sBases[i].lid}`,
@@ -175,6 +187,7 @@ function updateView(sys) {
             });
         }
     }
+    */
 }
 ;
 function clearSelection() {

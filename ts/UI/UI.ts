@@ -348,6 +348,10 @@ class View {
         return this.getToggleGroupValue('selectionScope');
     }
 
+    public setSelectionMode(setting: string) {
+        this.setToggleGroupValue('selectionScope', setting);
+    }
+
     public selectionEnabled() {
         return this.getSelectionMode() != "Disabled";
     }
@@ -361,7 +365,7 @@ class View {
     }
 
     public setCenteringSetting(setting: string) {
-        return this.setToggleGroupValue('centering', setting);
+        this.setToggleGroupValue('centering', setting);
     }
 
     public getInboxingSetting() {

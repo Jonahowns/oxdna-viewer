@@ -74,8 +74,11 @@ canvas.addEventListener("keydown", event =>{
             if (event.ctrlKey) {event.preventDefault(); makeOutputFiles(); break;}
 
             // Toggle selection:
-            let selectToggle = <HTMLInputElement>document.getElementById("selectToggle");
-            selectToggle.checked = !selectToggle.checked;
+            if (view.selectionEnabled()) {
+                view.setSelectionMode("Disabled");
+            } else {
+                view.setSelectionMode("Monomer");
+            }
             break;
 
         // Toggle dragging:

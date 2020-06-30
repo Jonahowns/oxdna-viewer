@@ -109,8 +109,12 @@ canvas.addEventListener("keydown", event => {
                 break;
             }
             // Toggle selection:
-            let selectToggle = document.getElementById("selectToggle");
-            selectToggle.checked = !selectToggle.checked;
+            if (view.selectionEnabled()) {
+                view.setSelectionMode("Disabled");
+            }
+            else {
+                view.setSelectionMode("Monomer");
+            }
             break;
         // Toggle dragging:
         case 'd':

@@ -101,11 +101,19 @@ canvas.addEventListener("keydown", event => {
             transformControls.setTranslationSnap(1);
             transformControls.setRotationSnap(Math.PI / 12);
             break;
+        case 'o':
+            if (event.ctrlKey) {
+                event.preventDefault();
+                Metro.dialog.open('#openFileDialog');
+                break;
+            }
+            break;
         case 's':
             // Save output
             if (event.ctrlKey) {
                 event.preventDefault();
-                makeOutputFiles();
+                Metro.dialog.open('#exportOxdnaDialog');
+                document.getElementById('gidUpdateWarning').hidden = !topologyEdited;
                 break;
             }
             // Toggle selection:

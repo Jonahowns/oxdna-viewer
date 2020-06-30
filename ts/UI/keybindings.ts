@@ -50,8 +50,20 @@ canvas.addEventListener("keydown", event =>{
         case 'a': if (event.ctrlKey) {event.preventDefault(); selectAll();} break;
 
         // Transform controls:
-        case 't': view.handleTransformMode('Translate'); break;
-        case 'r': view.handleTransformMode('Rotate'); break;
+        case 't': // Toggle translate
+            if (view.getTransformSetting() == 'Translate') {
+                view.handleTransformMode('None');
+            } else {
+                view.handleTransformMode('Translate')
+            }
+            break;
+        case 'r': // Toggle rotate
+            if (view.getTransformSetting() == 'Rotate') {
+                view.handleTransformMode('None');
+            } else {
+                view.handleTransformMode('Rotate')
+            }
+            break;
         case 'shift':
             transformControls.setTranslationSnap(1);
             transformControls.setRotationSnap(Math.PI/12);

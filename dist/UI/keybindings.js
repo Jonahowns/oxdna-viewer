@@ -81,11 +81,21 @@ canvas.addEventListener("keydown", event => {
             }
             break;
         // Transform controls:
-        case 't':
-            view.handleTransformMode('Translate');
+        case 't': // Toggle translate
+            if (view.getTransformSetting() == 'Translate') {
+                view.handleTransformMode('None');
+            }
+            else {
+                view.handleTransformMode('Translate');
+            }
             break;
-        case 'r':
-            view.handleTransformMode('Rotate');
+        case 'r': // Toggle rotate
+            if (view.getTransformSetting() == 'Rotate') {
+                view.handleTransformMode('None');
+            }
+            else {
+                view.handleTransformMode('Rotate');
+            }
             break;
         case 'shift':
             transformControls.setTranslationSnap(1);

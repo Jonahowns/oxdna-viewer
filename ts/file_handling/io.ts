@@ -304,7 +304,6 @@ class TrajectoryReader {
                 let buff = new Uint8Array(value);
                 let val = 116; // t
                 let i = -1;
-                //let last_i = -1;
                 let cur_offset = 0;
                 
                 // we know that the 1st offset is 0 as file starts with t 
@@ -313,14 +312,10 @@ class TrajectoryReader {
                 //populate the index array by the positions of t
                 while ((i = buff.indexOf(val, i+1)) != -1){
                     cur_offset =  (this.chunker.getOffset()+ i); 
-                    if (this.offset != cur_offset)
-                        this.lookupReader.addIndex(
-                            this.offset, cur_offset - this.offset, 
-                            this.lookupReader.position_lookup.length
-                        );
+                    this.lookupReader.addIndex(this.offset, cur_offset - this.offset, this.lookupReader.position_lookup.length);
                     this.offset = cur_offset;
                 }
-                // if there still stuff to fetch on first read ? NOTE: not sure why this is true
+                // if there still stuff to fetch  ? 
                 if(this.chunker.isLast()){ 
                     let size = this.chunker.file.size - this.offset;
                     if (size){
